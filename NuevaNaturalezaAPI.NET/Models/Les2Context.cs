@@ -15,6 +15,7 @@ public partial class Les2Context : DbContext
     {
     }
 
+
     public virtual DbSet<Auditorium> Auditoria { get; set; }
 
     public virtual DbSet<Dispositivo> Dispositivos { get; set; }
