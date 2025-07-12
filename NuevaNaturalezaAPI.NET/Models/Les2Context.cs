@@ -10,6 +10,7 @@ public partial class Les2Context : DbContext
     {
     }
 
+
     public Les2Context(DbContextOptions<Les2Context> options)
         : base(options)
     {
