@@ -1,0 +1,6 @@
+@NuevaNaturalezaAPI.NET_HostAddress = http://localhost:5018
+
+GET {{NuevaNaturalezaAPI.NET_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
