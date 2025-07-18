@@ -7,9 +7,15 @@ public partial class PuntoOptimo
 {
     public Guid IdPuntoOptimo { get; set; }
 
-    public Guid? IdTipoMedicion { get; set; }
+    public Guid IdSensor { get; set; }
 
-    public double? ValorMin { get; set; }
+    public Guid IdUnidadMedida { get; set; }
 
-    public double? ValorMax { get; set; }
+    public double ValorMin { get; set; }
+
+    public double ValorMax { get; set; }
+
+    public virtual Sensor IdSensorNavigation { get; set; } = null!;
+
+    public virtual UnidadMedidum IdUnidadMedidaNavigation { get; set; } = null!;
 }

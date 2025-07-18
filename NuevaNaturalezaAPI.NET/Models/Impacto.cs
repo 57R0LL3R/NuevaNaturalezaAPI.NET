@@ -7,5 +7,7 @@ public partial class Impacto
 {
     public Guid IdImpacto { get; set; }
 
-    public string? Nombre { get; set; }
+    public string Nombre { get; set; } = null!;
+
+    public virtual ICollection<Evento> Eventos { get; set; } = new List<Evento>();
 }
