@@ -7,11 +7,17 @@ public partial class Auditorium
 {
     public Guid IdAuditoria { get; set; }
 
-    public Guid? IdUsuario { get; set; }
+    public Guid IdUsuario { get; set; }
 
-    public DateTime? FechaHora { get; set; }
+    public Guid IdDispositivo { get; set; }
 
-    public string? Accion { get; set; }
+    public string Accion { get; set; } = null!;
 
-    public string? TablaAfectada { get; set; }
+    public DateTime Fecha { get; set; }
+
+    public string Observacion { get; set; } = null!;
+
+    public virtual Dispositivo IdDispositivoNavigation { get; set; } = null!;
+
+    public virtual Usuario IdUsuarioNavigation { get; set; } = null!;
 }

@@ -7,13 +7,17 @@ public partial class Evento
 {
     public Guid IdEvento { get; set; }
 
-    public string? Descripcion { get; set; }
+    public Guid IdDispositivo { get; set; }
 
-    public DateTime? Fecha { get; set; }
+    public Guid IdImpacto { get; set; }
 
-    public Guid? IdImpacto { get; set; }
+    public Guid IdSistema { get; set; }
 
-    public Guid? IdSistema { get; set; }
+    public DateTime FechaEvento { get; set; }
 
-    public Guid? IdTitulo { get; set; }
+    public virtual Dispositivo IdDispositivoNavigation { get; set; } = null!;
+
+    public virtual Impacto IdImpactoNavigation { get; set; } = null!;
+
+    public virtual Sistema IdSistemaNavigation { get; set; } = null!;
 }

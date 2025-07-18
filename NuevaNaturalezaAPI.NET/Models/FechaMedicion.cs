@@ -7,5 +7,7 @@ public partial class FechaMedicion
 {
     public Guid IdFechaMedicion { get; set; }
 
-    public DateTime? FechaHora { get; set; }
+    public DateOnly Fecha { get; set; }
+
+    public virtual ICollection<Medicion> Medicions { get; set; } = new List<Medicion>();
 }

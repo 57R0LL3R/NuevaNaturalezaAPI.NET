@@ -3,13 +3,11 @@ using System.Collections.Generic;
 
 namespace NuevaNaturalezaAPI.NET.Models;
 
-public partial class Sistema
+public partial class Marca
 {
-    public Guid IdSistema { get; set; }
+    public Guid IdMarca { get; set; }
 
     public string Nombre { get; set; } = null!;
 
     public virtual ICollection<Dispositivo> Dispositivos { get; set; } = new List<Dispositivo>();
-
-    public virtual ICollection<Evento> Eventos { get; set; } = new List<Evento>();
 }
