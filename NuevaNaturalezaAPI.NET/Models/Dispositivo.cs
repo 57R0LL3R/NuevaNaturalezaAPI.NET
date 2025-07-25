@@ -12,6 +12,7 @@ public partial class Dispositivo
     public string Sn { get; set; } = null!;
 
     public string? Descripcion { get; set; }
+    public string? Image { get; set; }
 
     public Guid? IdTipoDispositivo { get; set; }
 
