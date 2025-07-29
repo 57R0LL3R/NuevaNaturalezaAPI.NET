@@ -1,4 +1,6 @@
 using NuevaNaturalezaAPI.NET.Models;
+using NuevaNaturalezaAPI.NET.Services.Implementations;
+using NuevaNaturalezaAPI.NET.Services.Interfaces;
 using NuevaNaturalezaAPI.NET.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<NuevaNatuContext>();
 builder.Services.AddAutoMapper(typeof(MappingProfile)); // Puedes pasar el assembly también
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 string allowAll = "allowAll";
 builder.Services.AddCors(options =>
