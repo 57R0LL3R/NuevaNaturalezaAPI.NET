@@ -1,12 +1,14 @@
 using NuevaNaturalezaAPI.NET.Models;
+using NuevaNaturalezaAPI.NET.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<NuevaNatuContext>();
+builder.Services.AddAutoMapper(typeof(MappingProfile)); // Puedes pasar el assembly también
+
 string allowAll = "allowAll";
 builder.Services.AddCors(options =>
 {
