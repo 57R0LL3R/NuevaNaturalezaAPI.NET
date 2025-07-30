@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using NuevaNaturalezaAPI.NET.Models.DTO;
+using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuevaNaturalezaAPI.NET.Models;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
@@ -13,109 +11,46 @@ namespace NuevaNaturalezaAPI.NET.Controllers
     [ApiController]
     public class EstadoDispositivoesController : ControllerBase
     {
-        private readonly NuevaNatuContext _context;
+        private readonly IEstadoDispositivoService _service;
 
-        public EstadoDispositivoesController(NuevaNatuContext context)
+        public EstadoDispositivoesController(IEstadoDispositivoService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        // GET: api/EstadoDispositivoes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EstadoDispositivo>>> GetEstadoDispositivos()
+        public async Task<ActionResult<IEnumerable<EstadoDispositivoDTO>>> Get()
         {
-            return await _context.EstadoDispositivos.ToListAsync();
+            return Ok(await _service.GetAllAsync());
         }
 
-        // GET: api/EstadoDispositivoes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<EstadoDispositivo>> GetEstadoDispositivo(Guid id)
+        public async Task<ActionResult<EstadoDispositivoDTO>> Get(Guid id)
         {
-            var estadoDispositivo = await _context.EstadoDispositivos.FindAsync(id);
-
-            if (estadoDispositivo == null)
-            {
-                return NotFound();
-            }
-
-            return estadoDispositivo;
+            var result = await _service.GetByIdAsync(id);
+            return result == null ? NotFound() : Ok(result);
         }
 
-        // PUT: api/EstadoDispositivoes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEstadoDispositivo(Guid id, EstadoDispositivo estadoDispositivo)
-        {
-            if (id != estadoDispositivo.IdEstadoDispositivo)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(estadoDispositivo).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EstadoDispositivoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/EstadoDispositivoes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<EstadoDispositivo>> PostEstadoDispositivo(EstadoDispositivo estadoDispositivo)
+        public async Task<ActionResult<EstadoDispositivoDTO>> Post(EstadoDispositivoDTO dto)
         {
-            _context.EstadoDispositivos.Add(estadoDispositivo);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (EstadoDispositivoExists(estadoDispositivo.IdEstadoDispositivo))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetEstadoDispositivo", new { id = estadoDispositivo.IdEstadoDispositivo }, estadoDispositivo);
+            var created = await _service.CreateAsync(dto);
+            if (created == null) return BadRequest();
+            return CreatedAtAction(nameof(Get), new { id = created.IdEstadoDispositivo }, created);
         }
 
-        // DELETE: api/EstadoDispositivoes/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(Guid id, EstadoDispositivoDTO dto)
+        {
+            var updated = await _service.UpdateAsync(id, dto);
+            return updated ? NoContent() : BadRequest();
+        }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEstadoDispositivo(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var estadoDispositivo = await _context.EstadoDispositivos.FindAsync(id);
-            if (estadoDispositivo == null)
-            {
-                return NotFound();
-            }
-
-            _context.EstadoDispositivos.Remove(estadoDispositivo);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool EstadoDispositivoExists(Guid id)
-        {
-            return _context.EstadoDispositivos.Any(e => e.IdEstadoDispositivo == id);
+            var deleted = await _service.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
     }
 }

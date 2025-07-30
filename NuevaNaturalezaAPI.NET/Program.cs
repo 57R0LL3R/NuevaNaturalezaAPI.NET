@@ -1,4 +1,4 @@
-using NuevaNaturalezaAPI.NET.Models;
+using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Services.Implementations;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
 using NuevaNaturalezaAPI.NET.Utilities;
@@ -9,8 +9,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<NuevaNatuContext>();
-builder.Services.AddAutoMapper(typeof(MappingProfile)); // Puedes pasar el assembly también
+builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly); // Puedes pasar el assembly también
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuditoriumService, AuditoriumService>();
+builder.Services.AddScoped<IDispositivoService, DispositivoService>();
+builder.Services.AddScoped<IEstadoDispositivoService, EstadoDispositivoService>();
+builder.Services.AddScoped<IEventoService, EventoService>();
+builder.Services.AddScoped<IFechaMedicionService, FechaMedicionService>();
+builder.Services.AddScoped<IImpactoService, ImpactoService>();
+builder.Services.AddScoped<IMarcaService, MarcaService>();
+builder.Services.AddScoped<IMedicionService, MedicionService>();
+builder.Services.AddScoped<INotificacionService, NotificacionService>();
+builder.Services.AddScoped<IPuntoOptimoService, PuntoOptimoService>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
 string allowAll = "allowAll";
 builder.Services.AddCors(options =>

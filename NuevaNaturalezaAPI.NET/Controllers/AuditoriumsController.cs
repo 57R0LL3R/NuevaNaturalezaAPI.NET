@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using NuevaNaturalezaAPI.NET.Models.DTO;
+using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuevaNaturalezaAPI.NET.Models;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
@@ -13,109 +11,45 @@ namespace NuevaNaturalezaAPI.NET.Controllers
     [ApiController]
     public class AuditoriumsController : ControllerBase
     {
-        private readonly NuevaNatuContext _context;
+        private readonly IAuditoriumService _service;
 
-        public AuditoriumsController(NuevaNatuContext context)
+        public AuditoriumsController(IAuditoriumService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        // GET: api/Auditoriums
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Auditorium>>> GetAuditoria()
+        public async Task<ActionResult<IEnumerable<AuditoriumDTO>>> Get()
         {
-            return await _context.Auditoria.ToListAsync();
+            return Ok(await _service.GetAllAsync());
         }
 
-        // GET: api/Auditoriums/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Auditorium>> GetAuditorium(Guid id)
+        public async Task<ActionResult<AuditoriumDTO>> Get(Guid id)
         {
-            var auditorium = await _context.Auditoria.FindAsync(id);
-
-            if (auditorium == null)
-            {
-                return NotFound();
-            }
-
-            return auditorium;
+            var result = await _service.GetByIdAsync(id);
+            return result == null ? NotFound() : Ok(result);
         }
 
-        // PUT: api/Auditoriums/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAuditorium(Guid id, Auditorium auditorium)
-        {
-            if (id != auditorium.IdAuditoria)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(auditorium).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AuditoriumExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Auditoriums
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Auditorium>> PostAuditorium(Auditorium auditorium)
+        public async Task<ActionResult<AuditoriumDTO>> Post(AuditoriumDTO dto)
         {
-            _context.Auditoria.Add(auditorium);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (AuditoriumExists(auditorium.IdAuditoria))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetAuditorium", new { id = auditorium.IdAuditoria }, auditorium);
+            var created = await _service.CreateAsync(dto);
+            return CreatedAtAction(nameof(Get), new { id = created!.IdAuditoria }, created);
         }
 
-        // DELETE: api/Auditoriums/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(Guid id, AuditoriumDTO dto)
+        {
+            var updated = await _service.UpdateAsync(id, dto);
+            return updated ? NoContent() : BadRequest();
+        }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAuditorium(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var auditorium = await _context.Auditoria.FindAsync(id);
-            if (auditorium == null)
-            {
-                return NotFound();
-            }
-
-            _context.Auditoria.Remove(auditorium);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool AuditoriumExists(Guid id)
-        {
-            return _context.Auditoria.Any(e => e.IdAuditoria == id);
+            var deleted = await _service.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
     }
 }
