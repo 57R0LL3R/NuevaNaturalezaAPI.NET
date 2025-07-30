@@ -9,22 +9,22 @@ namespace NuevaNaturalezaAPI.NET.Controllers
     [ApiController]
     public class AuthController(IAuthService service) : ControllerBase
     {
-        private readonly IAuthService _loginService = service;
+        private readonly IAuthService _authService = service;
 
         [HttpPost("login")]
-        public async Task<ActionResult> Login(LoginDTO login)
+        public async Task<ActionResult> Login(LoginModel login)
         {
-            return Ok(await _loginService.Login(login));
+            return Ok(await _authService.Login(login));
         }
         [HttpPost("Register")]
         public async Task<ActionResult> Register(UsuarioDTO usuario)
         {
-            return Ok(await _loginService.Register(usuario));
+            return Ok(await _authService.Register(usuario));
         }
         [HttpPost("LogOut")]
         public async Task<ActionResult> LogOut()
         {
-            return Ok(await _loginService.LogOut());
+            return Ok(await _authService.LogOut());
         }
     }
 }

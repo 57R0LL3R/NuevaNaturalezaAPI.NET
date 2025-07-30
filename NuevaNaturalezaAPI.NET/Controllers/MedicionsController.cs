@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using NuevaNaturalezaAPI.NET.Models.DTO;
+using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuevaNaturalezaAPI.NET.Models;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
@@ -13,109 +11,50 @@ namespace NuevaNaturalezaAPI.NET.Controllers
     [ApiController]
     public class MedicionsController : ControllerBase
     {
-        private readonly NuevaNatuContext _context;
+        private readonly IMedicionService _service;
 
-        public MedicionsController(NuevaNatuContext context)
+        public MedicionsController(IMedicionService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        // GET: api/Medicions
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Medicion>>> GetMedicions()
+        public async Task<ActionResult<IEnumerable<MedicionDTO>>> Get()
         {
-            return await _context.Medicions.ToListAsync();
+            var result = await _service.GetAllAsync();
+            return Ok(result);
         }
 
-        // GET: api/Medicions/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Medicion>> GetMedicion(Guid id)
+        public async Task<ActionResult<MedicionDTO>> Get(Guid id)
         {
-            var medicion = await _context.Medicions.FindAsync(id);
-
-            if (medicion == null)
-            {
-                return NotFound();
-            }
-
-            return medicion;
+            var result = await _service.GetByIdAsync(id);
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
-        // PUT: api/Medicions/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMedicion(Guid id, Medicion medicion)
-        {
-            if (id != medicion.IdMedicion)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(medicion).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MedicionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Medicions
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Medicion>> PostMedicion(Medicion medicion)
+        public async Task<ActionResult<MedicionDTO>> Post(MedicionDTO dto)
         {
-            _context.Medicions.Add(medicion);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (MedicionExists(medicion.IdMedicion))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetMedicion", new { id = medicion.IdMedicion }, medicion);
+            var created = await _service.CreateAsync(dto);
+            if (created == null) return BadRequest();
+            return CreatedAtAction(nameof(Get), new { id = created.IdMedicion }, created);
         }
 
-        // DELETE: api/Medicions/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMedicion(Guid id)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(Guid id, MedicionDTO dto)
         {
-            var medicion = await _context.Medicions.FindAsync(id);
-            if (medicion == null)
-            {
-                return NotFound();
-            }
-
-            _context.Medicions.Remove(medicion);
-            await _context.SaveChangesAsync();
-
+            var success = await _service.UpdateAsync(id, dto);
+            if (!success) return BadRequest();
             return NoContent();
         }
 
-        private bool MedicionExists(Guid id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return _context.Medicions.Any(e => e.IdMedicion == id);
+            var success = await _service.DeleteAsync(id);
+            if (!success) return NotFound();
+            return NoContent();
         }
     }
 }

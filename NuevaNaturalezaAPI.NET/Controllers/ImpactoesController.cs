@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using NuevaNaturalezaAPI.NET.Models.DTO;
+using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuevaNaturalezaAPI.NET.Models;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
@@ -13,109 +11,46 @@ namespace NuevaNaturalezaAPI.NET.Controllers
     [ApiController]
     public class ImpactoesController : ControllerBase
     {
-        private readonly NuevaNatuContext _context;
+        private readonly IImpactoService _impactoService;
 
-        public ImpactoesController(NuevaNatuContext context)
+        public ImpactoesController(IImpactoService impactoService)
         {
-            _context = context;
+            _impactoService = impactoService;
         }
 
-        // GET: api/Impactoes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Impacto>>> GetImpactos()
+        public async Task<ActionResult<IEnumerable<ImpactoDTO>>> Get()
         {
-            return await _context.Impactos.ToListAsync();
+            return Ok(await _impactoService.GetAllAsync());
         }
 
-        // GET: api/Impactoes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Impacto>> GetImpacto(Guid id)
+        public async Task<ActionResult<ImpactoDTO>> Get(Guid id)
         {
-            var impacto = await _context.Impactos.FindAsync(id);
-
-            if (impacto == null)
-            {
-                return NotFound();
-            }
-
-            return impacto;
+            var result = await _impactoService.GetByIdAsync(id);
+            return result == null ? NotFound() : Ok(result);
         }
 
-        // PUT: api/Impactoes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutImpacto(Guid id, Impacto impacto)
-        {
-            if (id != impacto.IdImpacto)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(impacto).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ImpactoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Impactoes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Impacto>> PostImpacto(Impacto impacto)
+        public async Task<ActionResult<ImpactoDTO>> Post(ImpactoDTO dto)
         {
-            _context.Impactos.Add(impacto);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (ImpactoExists(impacto.IdImpacto))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetImpacto", new { id = impacto.IdImpacto }, impacto);
+            var created = await _impactoService.CreateAsync(dto);
+            if (created == null) return BadRequest();
+            return CreatedAtAction(nameof(Get), new { id = created.IdImpacto }, created);
         }
 
-        // DELETE: api/Impactoes/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(Guid id, ImpactoDTO dto)
+        {
+            var updated = await _impactoService.UpdateAsync(id, dto);
+            return updated ? NoContent() : BadRequest();
+        }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteImpacto(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var impacto = await _context.Impactos.FindAsync(id);
-            if (impacto == null)
-            {
-                return NotFound();
-            }
-
-            _context.Impactos.Remove(impacto);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool ImpactoExists(Guid id)
-        {
-            return _context.Impactos.Any(e => e.IdImpacto == id);
+            var deleted = await _impactoService.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
     }
 }

@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using NuevaNaturalezaAPI.NET.Models.DTO;
+using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuevaNaturalezaAPI.NET.Models;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
@@ -13,109 +11,46 @@ namespace NuevaNaturalezaAPI.NET.Controllers
     [ApiController]
     public class MarcasController : ControllerBase
     {
-        private readonly NuevaNatuContext _context;
+        private readonly IMarcaService _marcaService;
 
-        public MarcasController(NuevaNatuContext context)
+        public MarcasController(IMarcaService marcaService)
         {
-            _context = context;
+            _marcaService = marcaService;
         }
 
-        // GET: api/Marcas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Marca>>> GetMarcas()
+        public async Task<ActionResult<IEnumerable<MarcaDTO>>> Get()
         {
-            return await _context.Marcas.ToListAsync();
+            return Ok(await _marcaService.GetAllAsync());
         }
 
-        // GET: api/Marcas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Marca>> GetMarca(Guid id)
+        public async Task<ActionResult<MarcaDTO>> Get(Guid id)
         {
-            var marca = await _context.Marcas.FindAsync(id);
-
-            if (marca == null)
-            {
-                return NotFound();
-            }
-
-            return marca;
+            var result = await _marcaService.GetByIdAsync(id);
+            return result == null ? NotFound() : Ok(result);
         }
 
-        // PUT: api/Marcas/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMarca(Guid id, Marca marca)
-        {
-            if (id != marca.IdMarca)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(marca).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MarcaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Marcas
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Marca>> PostMarca(Marca marca)
+        public async Task<ActionResult<MarcaDTO>> Post(MarcaDTO dto)
         {
-            _context.Marcas.Add(marca);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (MarcaExists(marca.IdMarca))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetMarca", new { id = marca.IdMarca }, marca);
+            var created = await _marcaService.CreateAsync(dto);
+            if (created == null) return BadRequest();
+            return CreatedAtAction(nameof(Get), new { id = created.IdMarca }, created);
         }
 
-        // DELETE: api/Marcas/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(Guid id, MarcaDTO dto)
+        {
+            var updated = await _marcaService.UpdateAsync(id, dto);
+            return updated ? NoContent() : BadRequest();
+        }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMarca(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var marca = await _context.Marcas.FindAsync(id);
-            if (marca == null)
-            {
-                return NotFound();
-            }
-
-            _context.Marcas.Remove(marca);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool MarcaExists(Guid id)
-        {
-            return _context.Marcas.Any(e => e.IdMarca == id);
+            var deleted = await _marcaService.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
     }
 }

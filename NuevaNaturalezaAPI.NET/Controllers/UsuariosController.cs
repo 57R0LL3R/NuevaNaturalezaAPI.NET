@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using NuevaNaturalezaAPI.NET.Models.DTO;
+using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuevaNaturalezaAPI.NET.Models;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
@@ -13,109 +11,46 @@ namespace NuevaNaturalezaAPI.NET.Controllers
     [ApiController]
     public class UsuariosController : ControllerBase
     {
-        private readonly NuevaNatuContext _context;
+        private readonly IUsuarioService _usuarioService;
 
-        public UsuariosController(NuevaNatuContext context)
+        public UsuariosController(IUsuarioService usuarioService)
         {
-            _context = context;
+            _usuarioService = usuarioService;
         }
 
-        // GET: api/Usuarios
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
+        public async Task<ActionResult<IEnumerable<UsuarioDTO>>> Get()
         {
-            return await _context.Usuarios.ToListAsync();
+            return Ok(await _usuarioService.GetAllAsync());
         }
 
-        // GET: api/Usuarios/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Usuario>> GetUsuario(Guid id)
+        public async Task<ActionResult<UsuarioDTO>> Get(Guid id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
-
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-
-            return usuario;
+            var result = await _usuarioService.GetByIdAsync(id);
+            return result == null ? NotFound() : Ok(result);
         }
 
-        // PUT: api/Usuarios/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuario(Guid id, Usuario usuario)
-        {
-            if (id != usuario.IdUsuario)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(usuario).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UsuarioExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Usuarios
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
+        public async Task<ActionResult<UsuarioDTO>> Post(UsuarioDTO dto)
         {
-            _context.Usuarios.Add(usuario);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (UsuarioExists(usuario.IdUsuario))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetUsuario", new { id = usuario.IdUsuario }, usuario);
+            var created = await _usuarioService.CreateAsync(dto);
+            if (created == null) return BadRequest();
+            return CreatedAtAction(nameof(Get), new { id = created.IdUsuario }, created);
         }
 
-        // DELETE: api/Usuarios/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(Guid id, UsuarioDTO dto)
+        {
+            var updated = await _usuarioService.UpdateAsync(id, dto);
+            return updated ? NoContent() : BadRequest();
+        }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUsuario(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-
-            _context.Usuarios.Remove(usuario);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UsuarioExists(Guid id)
-        {
-            return _context.Usuarios.Any(e => e.IdUsuario == id);
+            var deleted = await _usuarioService.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
     }
 }

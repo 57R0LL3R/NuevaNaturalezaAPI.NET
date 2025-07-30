@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using NuevaNaturalezaAPI.NET.Models.DTO;
+using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuevaNaturalezaAPI.NET.Models;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
@@ -13,109 +11,45 @@ namespace NuevaNaturalezaAPI.NET.Controllers
     [ApiController]
     public class DispositivoesController : ControllerBase
     {
-        private readonly NuevaNatuContext _context;
+        private readonly IDispositivoService _service;
 
-        public DispositivoesController(NuevaNatuContext context)
+        public DispositivoesController(IDispositivoService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        // GET: api/Dispositivoes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Dispositivo>>> GetDispositivos()
+        public async Task<ActionResult<IEnumerable<DispositivoDTO>>> Get()
         {
-            return await _context.Dispositivos.ToListAsync();
+            return Ok(await _service.GetAllAsync());
         }
 
-        // GET: api/Dispositivoes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Dispositivo>> GetDispositivo(Guid id)
+        public async Task<ActionResult<DispositivoDTO>> Get(Guid id)
         {
-            var dispositivo = await _context.Dispositivos.FindAsync(id);
-
-            if (dispositivo == null)
-            {
-                return NotFound();
-            }
-
-            return dispositivo;
+            var result = await _service.GetByIdAsync(id);
+            return result == null ? NotFound() : Ok(result);
         }
 
-        // PUT: api/Dispositivoes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDispositivo(Guid id, Dispositivo dispositivo)
-        {
-            if (id != dispositivo.IdDispositivo)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(dispositivo).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DispositivoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Dispositivoes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Dispositivo>> PostDispositivo(Dispositivo dispositivo)
+        public async Task<ActionResult<DispositivoDTO>> Post(DispositivoDTO dto)
         {
-            _context.Dispositivos.Add(dispositivo);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (DispositivoExists(dispositivo.IdDispositivo))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetDispositivo", new { id = dispositivo.IdDispositivo }, dispositivo);
+            var created = await _service.CreateAsync(dto);
+            return CreatedAtAction(nameof(Get), new { id = created!.IdDispositivo }, created);
         }
 
-        // DELETE: api/Dispositivoes/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(Guid id, DispositivoDTO dto)
+        {
+            var updated = await _service.UpdateAsync(id, dto);
+            return updated ? NoContent() : BadRequest();
+        }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDispositivo(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var dispositivo = await _context.Dispositivos.FindAsync(id);
-            if (dispositivo == null)
-            {
-                return NotFound();
-            }
-
-            _context.Dispositivos.Remove(dispositivo);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool DispositivoExists(Guid id)
-        {
-            return _context.Dispositivos.Any(e => e.IdDispositivo == id);
+            var deleted = await _service.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
     }
 }

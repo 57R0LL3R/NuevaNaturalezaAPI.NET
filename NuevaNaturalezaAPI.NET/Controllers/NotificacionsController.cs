@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using NuevaNaturalezaAPI.NET.Models.DTO;
+using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuevaNaturalezaAPI.NET.Models;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
@@ -13,109 +11,50 @@ namespace NuevaNaturalezaAPI.NET.Controllers
     [ApiController]
     public class NotificacionsController : ControllerBase
     {
-        private readonly NuevaNatuContext _context;
+        private readonly INotificacionService _notificacionService;
 
-        public NotificacionsController(NuevaNatuContext context)
+        public NotificacionsController(INotificacionService notificacionService)
         {
-            _context = context;
+            _notificacionService = notificacionService;
         }
 
-        // GET: api/Notificacions
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Notificacion>>> GetNotificacions()
+        public async Task<ActionResult<IEnumerable<NotificacionDTO>>> Get()
         {
-            return await _context.Notificacions.ToListAsync();
+            var result = await _notificacionService.GetAllAsync();
+            return Ok(result);
         }
 
-        // GET: api/Notificacions/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Notificacion>> GetNotificacion(Guid id)
+        public async Task<ActionResult<NotificacionDTO>> Get(Guid id)
         {
-            var notificacion = await _context.Notificacions.FindAsync(id);
-
-            if (notificacion == null)
-            {
-                return NotFound();
-            }
-
-            return notificacion;
+            var result = await _notificacionService.GetByIdAsync(id);
+            if (result == null) return NotFound();
+            return Ok(result);
         }
 
-        // PUT: api/Notificacions/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutNotificacion(Guid id, Notificacion notificacion)
-        {
-            if (id != notificacion.IdNotificacion)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(notificacion).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!NotificacionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Notificacions
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Notificacion>> PostNotificacion(Notificacion notificacion)
+        public async Task<ActionResult<NotificacionDTO>> Post(NotificacionDTO dto)
         {
-            _context.Notificacions.Add(notificacion);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (NotificacionExists(notificacion.IdNotificacion))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetNotificacion", new { id = notificacion.IdNotificacion }, notificacion);
+            var created = await _notificacionService.CreateAsync(dto);
+            if (created == null) return BadRequest();
+            return CreatedAtAction(nameof(Get), new { id = created.IdNotificacion }, created);
         }
 
-        // DELETE: api/Notificacions/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteNotificacion(Guid id)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(Guid id, NotificacionDTO dto)
         {
-            var notificacion = await _context.Notificacions.FindAsync(id);
-            if (notificacion == null)
-            {
-                return NotFound();
-            }
-
-            _context.Notificacions.Remove(notificacion);
-            await _context.SaveChangesAsync();
-
+            var success = await _notificacionService.UpdateAsync(id, dto);
+            if (!success) return BadRequest();
             return NoContent();
         }
 
-        private bool NotificacionExists(Guid id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            return _context.Notificacions.Any(e => e.IdNotificacion == id);
+            var deleted = await _notificacionService.DeleteAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent();
         }
     }
 }

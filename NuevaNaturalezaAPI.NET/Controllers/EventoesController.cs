@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using NuevaNaturalezaAPI.NET.Models.DTO;
+using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NuevaNaturalezaAPI.NET.Models;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
@@ -13,109 +11,46 @@ namespace NuevaNaturalezaAPI.NET.Controllers
     [ApiController]
     public class EventoesController : ControllerBase
     {
-        private readonly NuevaNatuContext _context;
+        private readonly IEventoService _service;
 
-        public EventoesController(NuevaNatuContext context)
+        public EventoesController(IEventoService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        // GET: api/Eventoes
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Evento>>> GetEventos()
+        public async Task<ActionResult<IEnumerable<EventoDTO>>> Get()
         {
-            return await _context.Eventos.ToListAsync();
+            return Ok(await _service.GetAllAsync());
         }
 
-        // GET: api/Eventoes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Evento>> GetEvento(Guid id)
+        public async Task<ActionResult<EventoDTO>> Get(Guid id)
         {
-            var evento = await _context.Eventos.FindAsync(id);
-
-            if (evento == null)
-            {
-                return NotFound();
-            }
-
-            return evento;
+            var result = await _service.GetByIdAsync(id);
+            return result == null ? NotFound() : Ok(result);
         }
 
-        // PUT: api/Eventoes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEvento(Guid id, Evento evento)
-        {
-            if (id != evento.IdEvento)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(evento).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EventoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Eventoes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Evento>> PostEvento(Evento evento)
+        public async Task<ActionResult<EventoDTO>> Post(EventoDTO dto)
         {
-            _context.Eventos.Add(evento);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (EventoExists(evento.IdEvento))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetEvento", new { id = evento.IdEvento }, evento);
+            var created = await _service.CreateAsync(dto);
+            if (created == null) return BadRequest();
+            return CreatedAtAction(nameof(Get), new { id = created.IdEvento }, created);
         }
 
-        // DELETE: api/Eventoes/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(Guid id, EventoDTO dto)
+        {
+            var updated = await _service.UpdateAsync(id, dto);
+            return updated ? NoContent() : BadRequest();
+        }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvento(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var evento = await _context.Eventos.FindAsync(id);
-            if (evento == null)
-            {
-                return NotFound();
-            }
-
-            _context.Eventos.Remove(evento);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool EventoExists(Guid id)
-        {
-            return _context.Eventos.Any(e => e.IdEvento == id);
+            var deleted = await _service.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
     }
 }
