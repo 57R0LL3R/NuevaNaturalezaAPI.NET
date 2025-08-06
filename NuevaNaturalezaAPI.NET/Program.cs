@@ -9,7 +9,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<NuevaNatuContext>();
-builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly); // Puedes pasar el assembly también
+builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuditoriumService, AuditoriumService>();
 builder.Services.AddScoped<IDispositivoService, DispositivoService>();
@@ -22,6 +23,10 @@ builder.Services.AddScoped<IMedicionService, MedicionService>();
 builder.Services.AddScoped<INotificacionService, NotificacionService>();
 builder.Services.AddScoped<IPuntoOptimoService, PuntoOptimoService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ISistemaService, SistemaService>();
+builder.Services.AddScoped<ITipoDispositivoService, TipoDispositivoService>(); 
+builder.Services.AddScoped<ITipoDispositivoService, TipoDispositivoService>();
+
 
 string allowAll = "allowAll";
 builder.Services.AddCors(options =>
