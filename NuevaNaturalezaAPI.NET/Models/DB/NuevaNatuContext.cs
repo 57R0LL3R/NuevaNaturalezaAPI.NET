@@ -55,8 +55,6 @@ public partial class NuevaNatuContext : DbContext
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("name=connection");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,7 +66,7 @@ public partial class NuevaNatuContext : DbContext
             entity.Property(e => e.Accion)
                 .HasMaxLength(200)
                 .IsUnicode(false);
-            entity.Property(e => e.Fecha).HasColumnType("datetime");
+            entity.Property(e => e.Fecha).HasColumnType("timestamp");
             entity.Property(e => e.Observacion)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -127,7 +125,7 @@ public partial class NuevaNatuContext : DbContext
             entity.ToTable("Evento");
 
             entity.Property(e => e.IdEvento).ValueGeneratedNever();
-            entity.Property(e => e.FechaEvento).HasColumnType("datetime");
+            entity.Property(e => e.FechaEvento).HasColumnType("timestamp");
 
             entity.HasOne(d => d.IdDispositivoNavigation).WithMany(p => p.Eventos)
                 .HasForeignKey(d => d.IdDispositivo)
