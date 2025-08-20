@@ -15,6 +15,9 @@ public partial class NuevaNatuContext : DbContext
     {
     }
 
+    public virtual DbSet<Actuador> Actuador { get; set; }
+    public virtual DbSet<AccionAct> AccionAct { get; set; }
+
     public virtual DbSet<Auditorium> Auditoria { get; set; }
 
     public virtual DbSet<Dispositivo> Dispositivos { get; set; }
@@ -58,14 +61,34 @@ public partial class NuevaNatuContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AccionAct>(entity =>
+        {
+            entity.HasKey(e => e.IdAccionAct);
+
+            entity.Property(e => e.Accion)
+                .HasMaxLength(200);
+        });
+        modelBuilder.Entity<Actuador>(entity =>
+        {
+            entity.HasKey(e => e.IdActuador);
+            entity.HasOne(d => d.IdDispositivoNavigation).WithMany(d => d.Actuadores).HasForeignKey(d => d.IdDispositivo);
+            entity.HasOne(d => d.AccionAct).WithMany(d => d.Actuadores).HasForeignKey(d => d.IdAccionAct);
+
+        }
+        );
         modelBuilder.Entity<Auditorium>(entity =>
         {
             entity.HasKey(e => e.IdAuditoria).HasName("PK__Auditori__7FD13FA0A61CE084");
 
             entity.Property(e => e.IdAuditoria).ValueGeneratedNever();
-            entity.Property(e => e.Accion)
-                .HasMaxLength(200)
-                .IsUnicode(false);
+
+            entity.HasOne(e => e.IdAccionNavigation)
+                .WithMany(d=>d.Auditoria)
+                .HasForeignKey(e=>e.IdAccionAct)
+                .IsRequired(false);
+
+            entity.Property( e => e.Estado).IsRequired(false);
+
             entity.Property(e => e.Fecha).HasColumnType("timestamp");
             entity.Property(e => e.Observacion)
                 .HasMaxLength(200)

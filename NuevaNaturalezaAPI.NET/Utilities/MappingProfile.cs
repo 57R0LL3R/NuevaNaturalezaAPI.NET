@@ -13,6 +13,10 @@ namespace NuevaNaturalezaAPI.NET.Utilities
 
             CreateMap<AuditoriumDTO, Auditorium >().ReverseMap();
 
+            CreateMap<ActuadorDTO, Actuador>().ReverseMap();
+            CreateMap<AccionActDTO, AccionAct>().ReverseMap();
+
+
             CreateMap<DispositivoDTO, Dispositivo>().ReverseMap();
 
             CreateMap<EstadoDispositivoDTO, EstadoDispositivo>().ReverseMap();

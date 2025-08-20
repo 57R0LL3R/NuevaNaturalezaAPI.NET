@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NuevaNaturalezaAPI.NET.Models.DB;
@@ -11,9 +12,11 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 namespace NuevaNaturalezaAPI.NET.Migrations
 {
     [DbContext(typeof(NuevaNatuContext))]
-    partial class NuevaNatuContextModelSnapshot : ModelSnapshot
+    [Migration("20250815234048_postrgresMigration0")]
+    partial class postrgresMigration0
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,14 +67,14 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Property<Guid>("IdAuditoria")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Estado")
-                        .HasColumnType("integer");
+                    b.Property<string>("Accion")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .IsUnicode(false)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("timestamp");
-
-                    b.Property<Guid>("IdAccion")
-                        .HasColumnType("uuid");
 
                     b.Property<Guid>("IdDispositivo")
                         .HasColumnType("uuid");
@@ -87,8 +90,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
 
                     b.HasKey("IdAuditoria")
                         .HasName("PK__Auditori__7FD13FA0A61CE084");
-
-                    b.HasIndex("IdAccion");
 
                     b.HasIndex("IdDispositivo");
 
@@ -540,10 +541,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
 
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Auditorium", b =>
                 {
-                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.AccionAct", "IdAccionNavigation")
-                        .WithMany("Auditoria")
-                        .HasForeignKey("IdAccion");
-
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", "IdDispositivoNavigation")
                         .WithMany("Auditoria")
                         .HasForeignKey("IdDispositivo")
@@ -555,8 +552,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                         .HasForeignKey("IdUsuario")
                         .IsRequired()
                         .HasConstraintName("FK__Auditoria__IdUsu__7E37BEF6");
-
-                    b.Navigation("IdAccionNavigation");
 
                     b.Navigation("IdDispositivoNavigation");
 
@@ -747,8 +742,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.AccionAct", b =>
                 {
                     b.Navigation("Actuadores");
-
-                    b.Navigation("Auditoria");
                 });
 
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", b =>

@@ -14,6 +14,8 @@ builder.Services.AddDbContext<NuevaNatuContext>(options =>
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAccionActService, AccionActService>();
+builder.Services.AddScoped<IActuadorService, ActuadorService>();
 builder.Services.AddScoped<IAuditoriumService, AuditoriumService>();
 builder.Services.AddScoped<IDispositivoService, DispositivoService>();
 builder.Services.AddScoped<IEstadoDispositivoService, EstadoDispositivoService>();
@@ -34,6 +36,7 @@ builder.Services.AddScoped<ITipoMedicionService, TipoMedicionService>();
 builder.Services.AddScoped<ITipoMUnidadMService, TipoMUnidadMService>();
 builder.Services.AddScoped<ITipoNotificacionService, TipoNotificacionService>();
 builder.Services.AddScoped<IUnidadMedidaService, UnidadMedidaService>();
+builder.Services.AddScoped<IESPService, ESPService>();
 
 
 string allowAll = "allowAll";
