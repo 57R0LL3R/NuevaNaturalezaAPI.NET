@@ -11,13 +11,15 @@ public class Auditorium
 
     public Guid IdDispositivo { get; set; }
 
-    public string Accion { get; set; } = null!;
+    public Guid? IdAccionAct { get; set; }
 
     public DateTime Fecha { get; set; }
 
     public string Observacion { get; set; } = null!;
-
+    public int? Estado { get; set; }
     public virtual Dispositivo? IdDispositivoNavigation { get; set; } = null!;
 
     public virtual Usuario? IdUsuarioNavigation { get; set; } = null!;
+    public virtual AccionAct? IdAccionNavigation { get; set; } = null!;
+
 }

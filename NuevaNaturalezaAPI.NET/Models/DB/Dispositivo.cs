@@ -20,6 +20,7 @@ public class Dispositivo
 
     public Guid? IdMarca { get; set; }
 
+    public virtual ICollection<Actuador> Actuadores { get; set; } = new List<Actuador>();
     public virtual ICollection<Auditorium> Auditoria { get; set; } = new List<Auditorium>();
 
     public virtual ICollection<Evento> Eventos { get; set; } = new List<Evento>();

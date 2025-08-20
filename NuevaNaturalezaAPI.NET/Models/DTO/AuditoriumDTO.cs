@@ -11,9 +11,11 @@ public class AuditoriumDTO
 
     public Guid IdDispositivo { get; set; }
 
-    public string Accion { get; set; } = null!;
+    public Guid IdAccionAct { get; set; }
 
     public DateTime Fecha { get; set; }
 
     public string Observacion { get; set; } = null!;
+
+    public int Estado { get; set; }
 }

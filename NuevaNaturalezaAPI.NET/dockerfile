@@ -28,5 +28,5 @@ RUN dotnet publish "NuevaNaturalezaAPI.NET.csproj" -c $BUILD_CONFIGURATION -o /a
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENV ASPNETCORE_URLS=http://0.0.0.0:8880
+ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 ENTRYPOINT ["dotnet", "NuevaNaturalezaAPI.NET.dll"]
