@@ -5,9 +5,9 @@ namespace NuevaNaturalezaAPI.NET.Models.DB;
 
 public class FechaMedicion
 {
-    public Guid IdFechaMedicion { get; set; }
+    public Guid IdFechaMedicion { get; set; } = Guid.NewGuid();
 
-    public DateOnly Fecha { get; set; }
+    public DateTime Fecha { get; set; } = DateTime.Now;
 
     public virtual ICollection<Medicion> Medicions { get; set; } = new List<Medicion>();
 }

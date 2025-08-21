@@ -23,7 +23,10 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             var Puntosoptimos = await _context.PuntoOptimos.Include(x=>x.IdSensorNavigation.IdDispositivoNavigation).ToListAsync();
             var titulos = await _context.Titulos.ToListAsync();
             var tipoNoti = await _context.TipoNotificacions.ToListAsync();
-
+            if (mediciones.Count > 0)
+            {
+                FechaMedicion fm = new FechaMedicion();
+            }
 
             for (int i = 0; i < medicionesR.Count; i++)
             {
@@ -44,9 +47,10 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                         }
                     }
                 }
-                medicionesR[i].
-                _context.Add(medicionesR[i])
+                _context.Add(medicionesR[i]);
+
             }
+
             return;
         }
     }

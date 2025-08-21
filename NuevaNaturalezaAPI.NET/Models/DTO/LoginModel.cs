@@ -3,6 +3,6 @@
     public class LoginModel
     {
         public string User { get; set; } = null!;
-        public string Pass { get; set; } = null!;
+        public string? Pass { get; set; } = string.Empty;
     }
 }

@@ -42,5 +42,19 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             Response response = new() { NumberResponse = (int)NumberResponses.Correct, Data = user };
             return response;
         }
+
+
+        public async Task<Response> Recover(LoginModel lModel)
+        {
+
+            var user = await _context.Usuarios.FirstOrDefaultAsync(x=>x.Correo==lModel.User);
+            if (user == null)
+            {
+                return new();
+            }
+
+            Response response = new() { NumberResponse = (int)NumberResponses.Correct, Data = user ,Message="El mensaje fue enviado a su correo electronico"};
+            return response;
+        }
     }
 }
