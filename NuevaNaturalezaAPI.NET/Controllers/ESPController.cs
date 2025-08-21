@@ -13,9 +13,9 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         private readonly IESPService _service = service;
 
         [HttpPost("Medidas")]
-        public IActionResult Data(List<MedicionDTO> mediciones)
+        public async Task<IActionResult> Data(List<MedicionDTO> mediciones)
         {
-            _service.UpdateMedicions(mediciones);
+            await _service.UpdateMedicions(mediciones);
             return Ok();
         }
         [HttpGet("Estados")]

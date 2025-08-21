@@ -7,5 +7,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Interfaces
         public Task<Response> Login(LoginModel loginModel);
         public Task<Response> Register(UsuarioDTO registerModel);
         public Task<Response> LogOut();
+
+        public Task<Response> Recover(LoginModel lModel);
     }
 }

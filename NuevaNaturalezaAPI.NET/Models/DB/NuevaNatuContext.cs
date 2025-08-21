@@ -168,6 +168,10 @@ public partial class NuevaNatuContext : DbContext
 
         modelBuilder.Entity<FechaMedicion>(entity =>
         {
+
+            entity.Property(e => e.Fecha)
+                  .HasColumnType("timestamp without time zone")
+                  .HasDefaultValueSql("now()");
             entity.HasKey(e => e.IdFechaMedicion).HasName("PK__FechaMed__8194661818A24598");
 
             entity.ToTable("FechaMedicion");
