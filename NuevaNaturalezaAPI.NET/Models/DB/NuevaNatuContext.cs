@@ -74,6 +74,7 @@ public partial class NuevaNatuContext : DbContext
         {
             entity.HasKey(e => e.IdRecuperarContrasena);
 
+            entity.Property(e => e.Fecha).HasColumnType("timestamp");
             entity.Property(e => e.Correo)
                 .HasMaxLength(200);
         }
