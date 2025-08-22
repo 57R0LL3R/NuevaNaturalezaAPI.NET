@@ -49,7 +49,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         {
 
             var user = await _context.Usuarios.FirstOrDefaultAsync(x=>x.Correo==lModel.User);
-            if (user == null || lModel.Url is null)
+            if (user == null || lModel.Url.Equals( string.Empty))
             {
                 return new();
             }
