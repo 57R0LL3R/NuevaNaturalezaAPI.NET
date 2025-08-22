@@ -18,4 +18,5 @@ public class AuditoriumDTO
     public string Observacion { get; set; } = null!;
 
     public int Estado { get; set; }
+    public DispositivoDTO? IdDispositivoNavigation { get; set; }
 }

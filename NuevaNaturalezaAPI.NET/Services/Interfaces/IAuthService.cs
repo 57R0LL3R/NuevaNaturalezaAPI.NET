@@ -9,5 +9,6 @@ namespace NuevaNaturalezaAPI.NET.Services.Interfaces
         public Task<Response> LogOut();
 
         public Task<Response> Recover(LoginModel lModel);
+        public Task<Response> Recover(string id, LoginModel lModel);
     }
 }

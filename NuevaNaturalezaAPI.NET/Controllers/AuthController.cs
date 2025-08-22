@@ -27,6 +27,12 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         {
             return Ok(await _authService.Recover(usuario));
         }
+
+        [HttpPost("Recover/{id}")]
+        public async Task<ActionResult> Recover(string id, LoginModel usuario)
+        {
+            return Ok(await _authService.Recover(id, usuario));
+        }
         [HttpPost("LogOut")]
         public async Task<ActionResult> LogOut()
         {

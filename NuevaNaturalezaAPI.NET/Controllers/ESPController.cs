@@ -15,8 +15,7 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         [HttpPost("Medidas")]
         public async Task<IActionResult> Data(List<MedicionDTO> mediciones)
         {
-            await _service.UpdateMedicions(mediciones);
-            return Ok();
+            return Ok(await _service.UpdateMedicions(mediciones));
         }
         [HttpGet("Estados")]
         public async Task<IActionResult> Estados()
