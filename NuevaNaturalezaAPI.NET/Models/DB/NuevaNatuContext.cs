@@ -15,6 +15,7 @@ public partial class NuevaNatuContext : DbContext
     {
     }
 
+    public virtual DbSet<RecuperarContrasena> RecuperarContrasena { get; set; }
     public virtual DbSet<Actuador> Actuador { get; set; }
     public virtual DbSet<AccionAct> AccionAct { get; set; }
 
@@ -68,6 +69,16 @@ public partial class NuevaNatuContext : DbContext
             entity.Property(e => e.Accion)
                 .HasMaxLength(200);
         });
+
+        modelBuilder.Entity<RecuperarContrasena>(entity =>
+        {
+            entity.HasKey(e => e.IdRecuperarContrasena);
+
+            entity.Property(e => e.Correo)
+                .HasMaxLength(200);
+        }
+        );
+
         modelBuilder.Entity<Actuador>(entity =>
         {
             entity.HasKey(e => e.IdActuador);
@@ -84,7 +95,7 @@ public partial class NuevaNatuContext : DbContext
 
             entity.HasOne(e => e.IdAccionNavigation)
                 .WithMany(d=>d.Auditoria)
-                .HasForeignKey(e=>e.IdAccionAct)
+                .HasForeignKey(e=>e.IdAccion)
                 .IsRequired(false);
 
             entity.Property( e => e.Estado).IsRequired(false);

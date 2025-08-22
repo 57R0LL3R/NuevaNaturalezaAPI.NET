@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NuevaNaturalezaAPI.NET.Models.DB;
@@ -11,9 +12,11 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 namespace NuevaNaturalezaAPI.NET.Migrations
 {
     [DbContext(typeof(NuevaNatuContext))]
-    partial class NuevaNatuContextModelSnapshot : ModelSnapshot
+    [Migration("20250821010737_update_table")]
+    partial class update_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,7 +73,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("timestamp");
 
-                    b.Property<Guid?>("IdAccion")
+                    b.Property<Guid?>("IdAccionAct")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("IdDispositivo")
@@ -88,7 +91,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.HasKey("IdAuditoria")
                         .HasName("PK__Auditori__7FD13FA0A61CE084");
 
-                    b.HasIndex("IdAccion");
+                    b.HasIndex("IdAccionAct");
 
                     b.HasIndex("IdDispositivo");
 
@@ -324,28 +327,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.ToTable("PuntoOptimo", (string)null);
                 });
 
-            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.RecuperarContrasena", b =>
-                {
-                    b.Property<Guid>("IdRecuperarContrasena")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Correo")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("IdRecuperarContrasena");
-
-                    b.ToTable("RecuperarContrasena");
-                });
-
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Rol", b =>
                 {
                     b.Property<Guid>("IdRol")
@@ -566,7 +547,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                 {
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.AccionAct", "IdAccionNavigation")
                         .WithMany("Auditoria")
-                        .HasForeignKey("IdAccion");
+                        .HasForeignKey("IdAccionAct");
 
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", "IdDispositivoNavigation")
                         .WithMany("Auditoria")

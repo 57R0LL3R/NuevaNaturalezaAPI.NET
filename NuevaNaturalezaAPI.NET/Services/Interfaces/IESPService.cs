@@ -6,6 +6,6 @@ namespace NuevaNaturalezaAPI.NET.Services.Interfaces
     public interface IESPService
     {
         Task<List<ActuadorDTO>> GetActuadores();
-        Task UpdateMedicions(List<MedicionDTO> mediciones);
+        Task<Response> UpdateMedicions(List<MedicionDTO> mediciones);
     }
 }

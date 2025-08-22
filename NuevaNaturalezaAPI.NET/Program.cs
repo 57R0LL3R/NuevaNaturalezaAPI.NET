@@ -37,6 +37,7 @@ builder.Services.AddScoped<ITipoMUnidadMService, TipoMUnidadMService>();
 builder.Services.AddScoped<ITipoNotificacionService, TipoNotificacionService>();
 builder.Services.AddScoped<IUnidadMedidaService, UnidadMedidaService>();
 builder.Services.AddScoped<IESPService, ESPService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 
 string allowAll = "allowAll";

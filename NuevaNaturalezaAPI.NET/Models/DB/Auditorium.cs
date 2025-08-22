@@ -11,7 +11,7 @@ public class Auditorium
 
     public Guid IdDispositivo { get; set; }
 
-    public Guid? IdAccionAct { get; set; }
+    public Guid? IdAccion { get; set; }
 
     public DateTime Fecha { get; set; }
 
