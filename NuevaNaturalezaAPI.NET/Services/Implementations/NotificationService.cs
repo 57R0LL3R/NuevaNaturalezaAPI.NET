@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using NuevaNaturalezaAPI.NET.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +17,13 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         private readonly NuevaNatuContext _context;
         private readonly IMapper _mapper;
 
-        public NotificacionService(NuevaNatuContext context, IMapper mapper)
+        private readonly IHubContext<NotificacionesHub> _hubContext;
+
+        public NotificacionService(NuevaNatuContext context, IMapper mapper, IHubContext<NotificacionesHub> hubContext)
         {
             _context = context;
             _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         public async Task<IEnumerable<NotificacionDTO>> GetAllAsync()
@@ -40,6 +45,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             try
             {
                 await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("RecibirNotificacion", notificacion);
                 return _mapper.Map<NotificacionDTO>(entity);
             }
             catch

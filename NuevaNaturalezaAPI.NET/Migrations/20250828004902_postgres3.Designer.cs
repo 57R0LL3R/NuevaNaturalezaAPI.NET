@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NuevaNaturalezaAPI.NET.Models.DB;
@@ -11,9 +12,11 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 namespace NuevaNaturalezaAPI.NET.Migrations
 {
     [DbContext(typeof(NuevaNatuContext))]
-    partial class NuevaNatuContextModelSnapshot : ModelSnapshot
+    [Migration("20250828004902_postgres3")]
+    partial class postgres3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,7 +247,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Property<Guid>("IdMedicion")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("IdEstadoDispositivo")
+                    b.Property<Guid>("IdEstadoDispositivo")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("IdFechaMedicion")
@@ -253,7 +256,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Property<Guid>("IdSensor")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("IdUnidadMedida")
+                    b.Property<Guid>("IdUnidadMedida")
                         .HasColumnType("uuid");
 
                     b.Property<double>("Valor")
@@ -648,6 +651,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.EstadoDispositivo", "IdEstadoDispositivoNavigation")
                         .WithMany("Medicions")
                         .HasForeignKey("IdEstadoDispositivo")
+                        .IsRequired()
                         .HasConstraintName("FK__Medicion__IdEsta__778AC167");
 
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.FechaMedicion", "IdFechaMedicionNavigation")
@@ -665,6 +669,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.UnidadMedidum", "IdUnidadMedidaNavigation")
                         .WithMany("Medicions")
                         .HasForeignKey("IdUnidadMedida")
+                        .IsRequired()
                         .HasConstraintName("FK__Medicion__IdUnid__76969D2E");
 
                     b.Navigation("IdEstadoDispositivoNavigation");

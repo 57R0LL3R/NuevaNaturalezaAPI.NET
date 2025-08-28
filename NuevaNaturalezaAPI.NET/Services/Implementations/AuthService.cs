@@ -66,7 +66,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<Response> Recover(string id, LoginModel lModel)
         {
-            var rContrasena = await _context.RecuperarContrasena.FirstOrDefaultAsync(x => x.IdRecuperarContrasena == Guid.Parse(id) && x.Status==(int)NumberStatus.Error);
+            var rContrasena = await _context.RecuperarContrasena.FirstOrDefaultAsync(x => x.IdRecuperarContrasena == Guid.Parse(id) && x.Status==(int)NumberStatus.InProcces);
             if (rContrasena == null)
             {
                 return new Response();

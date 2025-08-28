@@ -5,7 +5,7 @@ namespace NuevaNaturalezaAPI.NET.Models.DB;
 
 public class Marca
 {
-    public Guid IdMarca { get; set; }
+    public Guid IdMarca { get; set; } = Guid.NewGuid();
 
     public string Nombre { get; set; } = null!;
 

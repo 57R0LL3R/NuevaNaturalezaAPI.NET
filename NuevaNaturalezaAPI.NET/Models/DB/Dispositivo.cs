@@ -5,11 +5,11 @@ namespace NuevaNaturalezaAPI.NET.Models.DB;
 
 public class Dispositivo
 {
-    public Guid IdDispositivo { get; set; }
+    public Guid IdDispositivo { get; set; } = Guid.NewGuid();
 
     public string Nombre { get; set; } = null!;
 
-    public string Sn { get; set; } = null!;
+    public string? Sn { get; set; }
 
     public string? Descripcion { get; set; }
     public string? Image { get; set; }

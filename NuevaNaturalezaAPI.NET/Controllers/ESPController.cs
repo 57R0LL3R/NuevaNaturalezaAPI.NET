@@ -13,14 +13,15 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         private readonly IESPService _service = service;
 
         [HttpPost("Medidas")]
-        public async Task<IActionResult> Data(List<MedicionDTO> mediciones)
+        public async Task<IActionResult> Data(MedicionesESP medicion)
         {
-            return Ok(await _service.UpdateMedicions(mediciones));
+            return Ok(await _service.UpdateMedicions(medicion));
         }
+
         [HttpGet("Estados")]
         public async Task<IActionResult> Estados()
         {
-            return Ok(await _service.GetActuadores());
+            return Ok(await _service.GetOutsOfActuators());
         }
     }
 }
