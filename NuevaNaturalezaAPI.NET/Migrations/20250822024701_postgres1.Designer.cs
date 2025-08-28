@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NuevaNaturalezaAPI.NET.Models.DB;
@@ -11,9 +12,11 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 namespace NuevaNaturalezaAPI.NET.Migrations
 {
     [DbContext(typeof(NuevaNatuContext))]
-    partial class NuevaNatuContextModelSnapshot : ModelSnapshot
+    [Migration("20250822024701_postgres1")]
+    partial class postgres1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -130,6 +133,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("Sn")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("SN");
@@ -244,7 +248,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Property<Guid>("IdMedicion")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("IdEstadoDispositivo")
+                    b.Property<Guid>("IdEstadoDispositivo")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("IdFechaMedicion")
@@ -253,7 +257,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Property<Guid>("IdSensor")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("IdUnidadMedida")
+                    b.Property<Guid>("IdUnidadMedida")
                         .HasColumnType("uuid");
 
                     b.Property<double>("Valor")
@@ -375,10 +379,10 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Property<Guid>("IdDispositivo")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("IdTipoMedicion")
+                    b.Property<Guid>("IdTipoMedicion")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("IdUnidadMedida")
+                    b.Property<Guid>("IdUnidadMedida")
                         .HasColumnType("uuid");
 
                     b.HasKey("IdSensor")
@@ -648,6 +652,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.EstadoDispositivo", "IdEstadoDispositivoNavigation")
                         .WithMany("Medicions")
                         .HasForeignKey("IdEstadoDispositivo")
+                        .IsRequired()
                         .HasConstraintName("FK__Medicion__IdEsta__778AC167");
 
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.FechaMedicion", "IdFechaMedicionNavigation")
@@ -665,6 +670,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.UnidadMedidum", "IdUnidadMedidaNavigation")
                         .WithMany("Medicions")
                         .HasForeignKey("IdUnidadMedida")
+                        .IsRequired()
                         .HasConstraintName("FK__Medicion__IdUnid__76969D2E");
 
                     b.Navigation("IdEstadoDispositivoNavigation");
@@ -725,11 +731,13 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.TipoMedicion", "IdTipoMedicionNavigation")
                         .WithMany("Sensors")
                         .HasForeignKey("IdTipoMedicion")
+                        .IsRequired()
                         .HasConstraintName("FK__Sensor__IdTipoMe__5DCAEF64");
 
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.UnidadMedidum", "IdUnidadMedidaNavigation")
                         .WithMany("Sensors")
                         .HasForeignKey("IdUnidadMedida")
+                        .IsRequired()
                         .HasConstraintName("FK__Sensor__IdUnidad__5EBF139D");
 
                     b.Navigation("IdDispositivoNavigation");

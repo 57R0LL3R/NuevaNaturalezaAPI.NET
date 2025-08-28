@@ -5,7 +5,7 @@ namespace NuevaNaturalezaAPI.NET.Models.DB;
 
 public class UnidadMedidum
 {
-    public Guid IdUnidadMedida { get; set; }
+    public Guid IdUnidadMedida { get; set; } = Guid.NewGuid();
 
     public string Nombre { get; set; } = null!;
 

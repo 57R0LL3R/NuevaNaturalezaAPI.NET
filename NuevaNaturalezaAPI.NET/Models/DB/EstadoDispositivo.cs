@@ -5,7 +5,7 @@ namespace NuevaNaturalezaAPI.NET.Models.DB;
 
 public class EstadoDispositivo
 {
-    public Guid IdEstadoDispositivo { get; set; }
+    public Guid IdEstadoDispositivo { get; set; } = Guid.NewGuid();
 
     public string Nombre { get; set; } = null!;
 

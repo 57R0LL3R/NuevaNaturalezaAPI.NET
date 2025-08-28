@@ -5,7 +5,7 @@ namespace NuevaNaturalezaAPI.NET.Models.DB;
 
 public class Rol
 {
-    public Guid IdRol { get; set; }
+    public Guid IdRol { get; set; } = Guid.NewGuid();
 
     public string Nombre { get; set; } = null!;
 

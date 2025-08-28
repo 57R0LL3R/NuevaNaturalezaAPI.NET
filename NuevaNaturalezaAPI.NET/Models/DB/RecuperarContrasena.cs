@@ -1,6 +1,6 @@
 ﻿enum NumberStatus
 {
-    Correct, Error
+    Correct, InProcces
 }
 
 namespace NuevaNaturalezaAPI.NET.Models.DB
@@ -10,6 +10,6 @@ namespace NuevaNaturalezaAPI.NET.Models.DB
         public Guid IdRecuperarContrasena { get; set; } = Guid.NewGuid();
         public string Correo { get; set; } = string.Empty;
         public DateTime Fecha { get; set; } = DateTime.Now;
-        public int Status { get; set; } = (int)NumberStatus.Error;
+        public int Status { get; set; } = (int)NumberStatus.InProcces;
     }
 }

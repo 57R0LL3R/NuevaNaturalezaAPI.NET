@@ -5,7 +5,7 @@ namespace NuevaNaturalezaAPI.NET.Models.DB;
 
 public class PuntoOptimo
 {
-    public Guid IdPuntoOptimo { get; set; }
+    public Guid IdPuntoOptimo { get; set; } = Guid.NewGuid();
 
     public Guid IdSensor { get; set; }
 

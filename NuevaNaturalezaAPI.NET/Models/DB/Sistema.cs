@@ -5,7 +5,7 @@ namespace NuevaNaturalezaAPI.NET.Models.DB;
 
 public class Sistema
 {
-    public Guid IdSistema { get; set; }
+    public Guid IdSistema { get; set; } = Guid.NewGuid();
 
     public string Nombre { get; set; } = null!;
 

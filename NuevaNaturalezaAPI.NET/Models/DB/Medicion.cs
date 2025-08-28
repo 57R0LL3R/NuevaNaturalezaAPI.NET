@@ -5,15 +5,15 @@ namespace NuevaNaturalezaAPI.NET.Models.DB;
 
 public class Medicion
 {
-    public Guid IdMedicion { get; set; }
+    public Guid IdMedicion { get; set; } = Guid.NewGuid();
 
     public Guid IdSensor { get; set; }
 
     public Guid IdFechaMedicion { get; set; }
 
-    public Guid IdUnidadMedida { get; set; }
+    public Guid? IdUnidadMedida { get; set; }
 
-    public Guid IdEstadoDispositivo { get; set; }
+    public Guid? IdEstadoDispositivo { get; set; }
 
     public double Valor { get; set; }
 
