@@ -13,11 +13,8 @@ public class Medicion
 
     public Guid? IdUnidadMedida { get; set; }
 
-    public Guid? IdEstadoDispositivo { get; set; }
-
     public double Valor { get; set; }
 
-    public virtual EstadoDispositivo IdEstadoDispositivoNavigation { get; set; } = null!;
 
     public virtual FechaMedicion IdFechaMedicionNavigation { get; set; } = null!;
 

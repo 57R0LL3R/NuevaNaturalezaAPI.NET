@@ -20,4 +20,6 @@ public class DispositivoDTO
     public Guid? IdSistema { get; set; }
 
     public Guid? IdMarca { get; set; }
+
+    public Guid? IdEstadoDispositivo { get; set; }
 }

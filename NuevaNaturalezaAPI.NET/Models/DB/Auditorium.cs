@@ -11,11 +11,10 @@ public class Auditorium
 
     public Guid IdDispositivo { get; set; }
 
-    public Guid? IdAccion { get; set; }
-
     public DateTime Fecha { get; set; }
 
     public string Observacion { get; set; } = null!;
+    public Guid? IdAccion { get; set; }
 
     public int? Estado { get; set; } = (int)NumberStatus.InProcces;
 

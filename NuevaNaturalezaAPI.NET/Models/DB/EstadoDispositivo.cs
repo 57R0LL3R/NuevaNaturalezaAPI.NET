@@ -9,5 +9,5 @@ public class EstadoDispositivo
 
     public string Nombre { get; set; } = null!;
 
-    public virtual ICollection<Medicion> Medicions { get; set; } = new List<Medicion>();
+    public virtual ICollection<Dispositivo> Dispositivos { get; set; } = new List<Dispositivo>();
 }

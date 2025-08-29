@@ -7,8 +7,9 @@
         public Guid IdAccionAct { get; set; }
         public string? On {  get; set; } 
         public string? Off { get; set; }
+
         public virtual AccionAct AccionAct { get; set; } = new AccionAct();
         public virtual Dispositivo IdDispositivoNavigation { get; set; } = new Dispositivo();
-
+        public virtual ICollection<Auditorium> Auditoria { get; set; } = new List<Auditorium>();
     }
 }

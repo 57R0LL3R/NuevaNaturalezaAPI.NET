@@ -45,7 +45,8 @@ string allowAll = "allowAll";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(allowAll, policy =>
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
+              );
 });
 var app = builder.Build();
 

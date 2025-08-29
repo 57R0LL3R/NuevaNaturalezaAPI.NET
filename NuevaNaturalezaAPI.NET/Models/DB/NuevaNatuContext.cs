@@ -85,7 +85,6 @@ public partial class NuevaNatuContext : DbContext
             entity.HasKey(e => e.IdActuador);
             entity.HasOne(d => d.IdDispositivoNavigation).WithMany(d => d.Actuadores).HasForeignKey(d => d.IdDispositivo);
             entity.HasOne(d => d.AccionAct).WithMany(d => d.Actuadores).HasForeignKey(d => d.IdAccionAct);
-
         }
         );
         modelBuilder.Entity<Auditorium>(entity =>
@@ -141,6 +140,9 @@ public partial class NuevaNatuContext : DbContext
             entity.HasOne(d => d.IdTipoDispositivoNavigation).WithMany(p => p.Dispositivos)
                 .HasForeignKey(d => d.IdTipoDispositivo)
                 .HasConstraintName("FK__Dispositi__IdTip__5165187F");
+
+            entity.HasOne(d => d.IdEstadoDispositivoNavigation)
+            .WithMany(d => d.Dispositivos).HasForeignKey(d => d.IdEstadoDispositivo);
         });
 
         modelBuilder.Entity<EstadoDispositivo>(entity =>
@@ -156,7 +158,7 @@ public partial class NuevaNatuContext : DbContext
         modelBuilder.Entity<Evento>(entity =>
         {
             entity.HasKey(e => e.IdEvento).HasName("PK__Evento__034EFC0405B295B9");
-
+            
             entity.ToTable("Evento");
 
             entity.Property(e => e.IdEvento).ValueGeneratedNever();
@@ -218,11 +220,6 @@ public partial class NuevaNatuContext : DbContext
             entity.ToTable("Medicion");
 
             entity.Property(e => e.IdMedicion).ValueGeneratedNever();
-
-            entity.HasOne(d => d.IdEstadoDispositivoNavigation).WithMany(p => p.Medicions)
-                .HasForeignKey(d => d.IdEstadoDispositivo)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Medicion__IdEsta__778AC167");
 
             entity.HasOne(d => d.IdFechaMedicionNavigation).WithMany(p => p.Medicions)
                 .HasForeignKey(d => d.IdFechaMedicion)

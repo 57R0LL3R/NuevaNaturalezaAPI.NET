@@ -12,8 +12,5 @@ public class MedicionDTO
     public Guid IdFechaMedicion { get; set; }
 
     public Guid IdUnidadMedida { get; set; }
-
-    public Guid IdEstadoDispositivo { get; set; }
-
     public double Valor { get; set; }
 }
