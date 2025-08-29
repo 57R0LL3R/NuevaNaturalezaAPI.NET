@@ -15,6 +15,8 @@ public class Notificacion
 
     public string? Enlace { get; set; }
 
+    public bool? Leido { get; set; }
+
     public virtual TipoNotificacion IdTipoNotificacionNavigation { get; set; } = null!;
 
     public virtual Titulo IdTituloNavigation { get; set; } = null!;

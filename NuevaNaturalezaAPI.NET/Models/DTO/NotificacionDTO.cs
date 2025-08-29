@@ -14,4 +14,5 @@ public class NotificacionDTO
     public string? Mensaje { get; set; }
 
     public string? Enlace { get; set; }
+    public bool? Leido { get; set; }
 }

@@ -9,6 +9,7 @@ namespace NuevaNaturalezaAPI.NET.Models.DTO
         public Guid IdActuador { get; set; } = Guid.NewGuid();
         public Guid IdDispositivo { get; set; }
         public Guid IdAccionAct { get; set; }
-        public virtual Dispositivo IdDispositivoNavigation { get; set; } = new Dispositivo();
+        public string? On { get; set; }
+        public string? Off { get; set; }
     }
 }

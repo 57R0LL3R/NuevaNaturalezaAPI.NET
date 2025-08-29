@@ -45,7 +45,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             try
             {
                 await _context.SaveChangesAsync();
-                await _hubContext.Clients.All.SendAsync("RecibirNotificacion", notificacion);
+                await _hubContext.Clients.All.SendAsync("RecibirNotificacion", entity);
                 return _mapper.Map<NotificacionDTO>(entity);
             }
             catch
