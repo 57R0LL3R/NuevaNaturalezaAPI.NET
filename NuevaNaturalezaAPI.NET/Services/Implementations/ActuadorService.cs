@@ -34,8 +34,16 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         public async Task<bool> UpdateAsync(Guid id, ActuadorDTO dto)
         {
             if (id != dto.IdActuador) return false;
-
+            Actuador? actuador = await _context.Actuador.FirstOrDefaultAsync(x=>x.IdActuador==id);
+            if (actuador == null) return false;
+            if (dto.IdAccionAct != actuador.IdAccionAct)
+            {
+                var audi = _context.Auditoria.FirstAsync(x => x.IdDispositivo == dto.IdDispositivo);
+                if (audi == null) await _context.Auditoria.AddAsync(new Auditorium(){Estado = (int)NumberStatus.InProcces, IdAccion= dto.IdAccionAct ,IdDispositivo=dto.IdDispositivo,IdUsuario= Guid.Parse("5d78da22-8c43-40f5-aa96-bfe9d531fde8") });
+                dto.IdAccionAct = actuador.IdAccionAct;
+            }
             var entity = _mapper.Map<Actuador>(dto);
+
             _context.Entry(entity).State = EntityState.Modified;
 
             try
