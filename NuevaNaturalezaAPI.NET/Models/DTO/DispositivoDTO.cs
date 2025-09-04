@@ -22,4 +22,6 @@ public class DispositivoDTO
     public Guid? IdMarca { get; set; }
 
     public Guid? IdEstadoDispositivo { get; set; }
+
+    public virtual ICollection<Sensor> Sensors { get; set; } = new List<Sensor>();
 }

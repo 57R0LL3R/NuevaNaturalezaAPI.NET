@@ -9,15 +9,11 @@ public class Sensor
 
     public Guid IdDispositivo { get; set; }
 
-    public Guid? IdTipoMedicion { get; set; }
-
-    public Guid? IdUnidadMedida { get; set; }
+    public Guid? IdTipoMUnidadM { get; set; }
 
     public virtual Dispositivo? IdDispositivoNavigation { get; set; } = null!;
 
-    public virtual TipoMedicion? IdTipoMedicionNavigation { get; set; } = null!;
-
-    public virtual UnidadMedidum? IdUnidadMedidaNavigation { get; set; } = null!;
+    public virtual TipoMUnidadM? IdTipoMUnidadMNavigation { get; set; } = null!;
 
     public virtual ICollection<Medicion>? Medicions { get; set; } = new List<Medicion>();
 

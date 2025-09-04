@@ -9,7 +9,7 @@ public class PuntoOptimo
 
     public Guid IdSensor { get; set; }
 
-    public Guid IdUnidadMedida { get; set; }
+    public Guid IdTipoMUnidadM { get; set; }
 
     public double ValorMin { get; set; }
 
@@ -17,5 +17,6 @@ public class PuntoOptimo
 
     public virtual Sensor IdSensorNavigation { get; set; } = null!;
 
-    public virtual UnidadMedidum IdUnidadMedidaNavigation { get; set; } = null!;
+    public virtual TipoMUnidadM IdTipoMUnidadMNavigation { get; set; } = null!;
+
 }
