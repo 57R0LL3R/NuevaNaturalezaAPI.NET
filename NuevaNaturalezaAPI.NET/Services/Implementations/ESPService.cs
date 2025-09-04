@@ -14,6 +14,45 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         private readonly NuevaNatuContext _context = context;
         private readonly IMapper _mapper = mapper;
         private readonly INotificacionService _service=service;
+
+        public async Task<Response> Confirm(string estadosF)
+        {
+            var estados = estadosF.Split(",").ToList();
+            var auditorias = await _context.Auditoria.Where(x => x.Estado == (int)NumberStatus.InProcces).OrderBy(x=>x.Fecha).ToListAsync();
+            var actuadores = await _context.Actuador.Where(x => estados.Contains(x.On ?? string.Empty) || estados.Contains(x.Off ?? string.Empty)).ToListAsync();
+            foreach (Actuador act in actuadores)
+            {
+                foreach(string es in estados)
+                {
+                    if (act.Off == es || act.On == es)
+                    {
+                        var audi = auditorias.Find(x=>x.IdDispositivo.Equals(act.IdDispositivo));
+                        if (audi != null)
+                        {
+                            act.IdAccionAct = audi.IdAccion;
+                            audi.Estado = (int)NumberStatus.Correct;
+                            _context.Entry(act).State = EntityState.Modified;
+                            _context.Entry(audi).State = EntityState.Modified;
+                            await _context.SaveChangesAsync();
+
+                        }
+                    }
+                }
+            }
+            try
+            {
+
+                return new Response()
+                {
+                    Data = auditorias,
+                    NumberResponse = (int)NumberResponses.Correct
+                };
+            }
+            catch (Exception ex) {
+                return new Response() { Message = ex.Message, NumberResponse = (int)NumberResponses.Error };
+            }
+        }
+
         public async Task<string> GetOutsOfActuators()
         {
             var auditorias = await _context.Auditoria.Where(x=>x.Estado==(int)NumberStatus.InProcces).ToListAsync();
@@ -22,7 +61,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
 
             string outputs = "";
-            for(int i = 0; i < actuadores.Count; i++)
+            for(int i = 0; i < auditorias.Count; i++)
             {
                 var act = actuadores.Find(x => x.IdDispositivo == auditorias[i].IdDispositivo);
                 if(act != null)

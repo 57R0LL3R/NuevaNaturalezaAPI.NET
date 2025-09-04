@@ -7,5 +7,6 @@ namespace NuevaNaturalezaAPI.NET.Services.Interfaces
     {
         Task<string> GetOutsOfActuators();
         Task<Response> UpdateMedicions(MedicionesESP mediciones);
+        Task<Response> Confirm(string estadosf);
     }
 }

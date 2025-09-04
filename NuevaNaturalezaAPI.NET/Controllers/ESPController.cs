@@ -22,6 +22,12 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         public async Task<IActionResult> Estados()
         {
             return Ok(await _service.GetOutsOfActuators());
+        }  
+
+        [HttpGet("Confirm")]
+        public async Task<IActionResult> Confirm([FromQuery]string estadosf)
+        {
+            return Ok(await _service.Confirm(estadosf));
         }
     }
 }
