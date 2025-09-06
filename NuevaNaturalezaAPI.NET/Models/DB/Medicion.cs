@@ -11,14 +11,13 @@ public class Medicion
 
     public Guid IdFechaMedicion { get; set; }
 
-    public Guid? IdUnidadMedida { get; set; }
+    public Guid? IdTipoMUnidadM { get; set; }
 
     public double Valor { get; set; }
-
 
     public virtual FechaMedicion IdFechaMedicionNavigation { get; set; } = null!;
 
     public virtual Sensor IdSensorNavigation { get; set; } = null!;
 
-    public virtual UnidadMedidum IdUnidadMedidaNavigation { get; set; } = null!;
+    public virtual TipoMUnidadM IdTipoMUnidadMNavigation { get; set; } = null!;
 }

@@ -13,13 +13,19 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<IEnumerable<TipoMUnidadMDTO>> GetAllAsync()
         {
-            var lista = await _context.TipoMUnidadMs.ToListAsync();
+            var lista = await _context.TipoMUnidadMs
+                .Include(x => x.IdTipoMedicionNavigation)
+                .Include(x=>x.IdUnidadMedidaNavigation)
+                .ToListAsync();
             return _mapper.Map<List<TipoMUnidadMDTO>>(lista);
         }
 
         public async Task<TipoMUnidadMDTO?> GetByIdAsync(Guid id)
         {
-            var item = await _context.TipoMUnidadMs.FindAsync(id);
+            var item = await _context.TipoMUnidadMs
+                .Include(x => x.IdTipoMedicionNavigation)
+                .Include(x => x.IdUnidadMedidaNavigation)
+                .FirstOrDefaultAsync(x=>x.IdTipoMUnidadM==id);
             return item == null ? null : _mapper.Map<TipoMUnidadMDTO>(item);
         }
 

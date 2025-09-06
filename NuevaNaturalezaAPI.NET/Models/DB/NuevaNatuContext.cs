@@ -84,7 +84,7 @@ public partial class NuevaNatuContext : DbContext
         {
             entity.HasKey(e => e.IdActuador);
             entity.HasOne(d => d.IdDispositivoNavigation).WithMany(d => d.Actuadores).HasForeignKey(d => d.IdDispositivo);
-            entity.HasOne(d => d.AccionAct).WithMany(d => d.Actuadores).HasForeignKey(d => d.IdAccionAct);
+            entity.HasOne(d => d.IdAccionActNavigation).WithMany(d => d.Actuadores).HasForeignKey(d => d.IdAccionAct);
         }
         );
         modelBuilder.Entity<Auditorium>(entity =>
@@ -231,8 +231,8 @@ public partial class NuevaNatuContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Medicion__IdSens__74AE54BC");
 
-            entity.HasOne(d => d.IdUnidadMedidaNavigation).WithMany(p => p.Medicions)
-                .HasForeignKey(d => d.IdUnidadMedida)
+            entity.HasOne(d => d.IdTipoMUnidadMNavigation).WithMany(p => p.Medicions)
+                .HasForeignKey(d => d.IdTipoMUnidadM)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Medicion__IdUnid__76969D2E");
         });
@@ -271,8 +271,8 @@ public partial class NuevaNatuContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__PuntoOpti__IdSen__619B8048");
 
-            entity.HasOne(d => d.IdUnidadMedidaNavigation).WithMany(p => p.PuntoOptimos)
-                .HasForeignKey(d => d.IdUnidadMedida)
+            entity.HasOne(d => d.IdTipoMUnidadMNavigation).WithMany(p => p.PuntoOptimos)
+                .HasForeignKey(d => d.IdTipoMUnidadM)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__PuntoOpti__IdUni__628FA481");
         });
@@ -300,15 +300,9 @@ public partial class NuevaNatuContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Sensor__IdDispos__5CD6CB2B");
 
-            entity.HasOne(d => d.IdTipoMedicionNavigation).WithMany(p => p.Sensors)
-                .HasForeignKey(d => d.IdTipoMedicion)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Sensor__IdTipoMe__5DCAEF64");
-
-            entity.HasOne(d => d.IdUnidadMedidaNavigation).WithMany(p => p.Sensors)
-                .HasForeignKey(d => d.IdUnidadMedida)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Sensor__IdUnidad__5EBF139D");
+            entity.HasOne(d => d.IdTipoMUnidadMNavigation).WithMany(p => p.Sensors)
+                .HasForeignKey(d => d.IdTipoMUnidadM)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<Sistema>(entity =>

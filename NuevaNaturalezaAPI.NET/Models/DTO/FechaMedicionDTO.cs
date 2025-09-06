@@ -7,6 +7,6 @@ public  class FechaMedicionDTO
 {
     public Guid IdFechaMedicion { get; set; } = Guid.NewGuid();
 
-    public DateOnly Fecha { get; set; }
+    public DateTime Fecha { get; set; }
 
 }
