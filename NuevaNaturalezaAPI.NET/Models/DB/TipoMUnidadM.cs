@@ -10,6 +10,7 @@ public class TipoMUnidadM
     public Guid IdTipoMedicion { get; set; }
 
     public Guid IdUnidadMedida { get; set; }
+
     public virtual ICollection<Sensor> Sensors { get; set; } = new List<Sensor>();
 
     public virtual TipoMedicion IdTipoMedicionNavigation { get; set; } = null!;

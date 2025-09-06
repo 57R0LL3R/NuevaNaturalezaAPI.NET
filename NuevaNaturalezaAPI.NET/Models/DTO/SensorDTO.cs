@@ -10,13 +10,11 @@ public class SensorDTO
 
     public Guid IdDispositivo { get; set; }
 
-    public Guid IdTipoMedicion { get; set; }
+    public Guid IdTipoMUnidadM { get; set; }
 
-    public Guid IdUnidadMedida { get; set; }
+    public virtual TipoMUnidadMDTO? IdTipoMUnidadMNavigation { get; set; } = null!;
 
-    public virtual TipoMedicion? IdTipoMedicionNavigation { get; set; } = null!;
+    public virtual ICollection<MedicionDTO>? Medicions { get; set; } = new List<MedicionDTO>();
 
-    public virtual ICollection<Medicion>? Medicions { get; set; } = new List<Medicion>();
-
-    public virtual ICollection<PuntoOptimo>? PuntoOptimos { get; set; } = new List<PuntoOptimo>();
+    public virtual ICollection<PuntoOptimoDTO>? PuntoOptimos { get; set; } = new List<PuntoOptimoDTO>();
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuevaNaturalezaAPI.NET.Models.DB;
+using System;
 using System.Collections.Generic;
 
 namespace NuevaNaturalezaAPI.NET.Models.DTO;
@@ -19,4 +20,6 @@ public class AuditoriumDTO
 
     public int Estado { get; set; }
     public DispositivoDTO? IdDispositivoNavigation { get; set; }
+    public virtual UsuarioDTO? IdUsuarioNavigation { get; set; } = null!;
+    public virtual AccionActDTO? IdAccionNavigation { get; set; } = null!;
 }

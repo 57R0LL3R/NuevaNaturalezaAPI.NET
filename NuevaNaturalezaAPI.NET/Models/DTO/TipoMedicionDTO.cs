@@ -10,6 +10,5 @@ public class TipoMedicionDTO
 
     public string Nombre { get; set; } = null!;
 
-    public virtual ICollection<TipoMUnidadM> TipoMUnidadMs { get; set; } = new List<TipoMUnidadM>();
 
 }

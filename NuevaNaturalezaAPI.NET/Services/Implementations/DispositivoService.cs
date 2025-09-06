@@ -9,27 +9,28 @@ using System.Threading.Tasks;
 
 namespace NuevaNaturalezaAPI.NET.Services.Implementations
 {
-    public class DispositivoService : IDispositivoService
+    public class DispositivoService(NuevaNatuContext context, IMapper mapper, ISensorService sensorService) : IDispositivoService
     {
-        private readonly NuevaNatuContext _context;
-        private readonly IMapper _mapper;
-
-        public DispositivoService(NuevaNatuContext context, IMapper mapper)
-        {
-            _context = context;
-            _mapper = mapper;
-        }
+        private readonly NuevaNatuContext _context = context;
+        private readonly IMapper _mapper = mapper;
+        private readonly ISensorService _sensorService = sensorService;
 
         public async Task<IEnumerable<DispositivoDTO>> GetAllAsync()
         {
-            var list = await _context.Dispositivos.ToListAsync();
-            return _mapper.Map<List<DispositivoDTO>>(list);
+            var sensors = await _sensorService.GetAllAsync();
+            var list = await _context.Dispositivos.Include(x=>x.IdTipoDispositivoNavigation).ToListAsync();
+            var list1 = _mapper.Map<List<DispositivoDTO>>(list);
+            return list1;
         }
 
         public async Task<DispositivoDTO?> GetByIdAsync(Guid id)
         {
-            var item = await _context.Dispositivos.FindAsync(id);
-            return item == null ? null : _mapper.Map<DispositivoDTO>(item);
+
+            var sensors = await _sensorService.GetAllAsync();
+            var item = await _context.Dispositivos.Include(x => x.IdTipoDispositivoNavigation).FirstOrDefaultAsync(x=>x.IdDispositivo==id);
+            if (item is null) return null;
+            var itemf = _mapper.Map<DispositivoDTO>(item);
+            return itemf ;
         }
 
         public async Task<DispositivoDTO?> CreateAsync(DispositivoDTO dto)

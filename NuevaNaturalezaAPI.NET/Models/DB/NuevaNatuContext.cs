@@ -84,7 +84,7 @@ public partial class NuevaNatuContext : DbContext
         {
             entity.HasKey(e => e.IdActuador);
             entity.HasOne(d => d.IdDispositivoNavigation).WithMany(d => d.Actuadores).HasForeignKey(d => d.IdDispositivo);
-            entity.HasOne(d => d.AccionAct).WithMany(d => d.Actuadores).HasForeignKey(d => d.IdAccionAct);
+            entity.HasOne(d => d.IdAccionActNavigation).WithMany(d => d.Actuadores).HasForeignKey(d => d.IdAccionAct);
         }
         );
         modelBuilder.Entity<Auditorium>(entity =>

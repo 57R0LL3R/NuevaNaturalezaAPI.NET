@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 
 namespace NuevaNaturalezaAPI.NET.Models.DTO;
@@ -14,5 +15,11 @@ public class NotificacionDTO
     public string? Mensaje { get; set; }
 
     public string? Enlace { get; set; }
+
     public bool? Leido { get; set; }
+
+
+    public virtual TipoNotificacionDTO IdTipoNotificacionNavigation { get; set; } = null!;
+
+    public virtual TituloDTO IdTituloNavigation { get; set; } = null!;
 }

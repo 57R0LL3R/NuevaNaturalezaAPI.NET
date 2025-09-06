@@ -11,5 +11,6 @@ namespace NuevaNaturalezaAPI.NET.Models.DTO
         public Guid? IdAccionAct { get; set; }
         public string? On { get; set; }
         public string? Off { get; set; }
+        public AccionActDTO? IdAccionActNavigation { get; set; }
     }
 }

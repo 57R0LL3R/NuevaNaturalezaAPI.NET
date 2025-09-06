@@ -11,7 +11,8 @@ public partial class TipoMUnidadMDTO
     public Guid IdTipoMedicion { get; set; }
 
     public Guid IdUnidadMedida { get; set; }
-    public virtual TipoMedicion IdTipoMedicionNavigation { get; set; } = null!;
 
-    public virtual UnidadMedidum IdUnidadMedidaNavigation { get; set; } = null!;
+    public virtual TipoMedicionDTO IdTipoMedicionNavigation { get; set; } = null!;
+
+    public virtual UnidadMedidumDTO IdUnidadMedidaNavigation { get; set; } = null!;
 }

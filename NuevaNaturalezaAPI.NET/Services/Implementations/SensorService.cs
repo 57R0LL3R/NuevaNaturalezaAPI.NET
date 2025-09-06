@@ -3,23 +3,49 @@ using Microsoft.EntityFrameworkCore;
 using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using System.Linq;
 
 namespace NuevaNaturalezaAPI.NET.Services.Implementations
 {
-    public class SensorService(NuevaNatuContext context, IMapper mapper) : ISensorService
+    public class SensorService(NuevaNatuContext context, IMapper mapper,ITipoMUnidadMService TipoMUnidadMService) : ISensorService
     {
         private readonly NuevaNatuContext _context = context;
         private readonly IMapper _mapper = mapper;
-
+        private readonly ITipoMUnidadMService _tipoMUnidadMService = TipoMUnidadMService;
         public async Task<IEnumerable<SensorDTO>> GetAllAsync()
         {
-            var lista = await _context.Sensors.ToListAsync();
-            return _mapper.Map<List<SensorDTO>>(lista);
+            var tipounidadm = await _tipoMUnidadMService.GetAllAsync();
+            var lista = await _context.Sensors
+                .Include(x=>x.IdTipoMUnidadMNavigation)
+                .Include(x => x.Medicions)
+                .Include(x => x.PuntoOptimos)
+                .ToListAsync();
+            var list1 = _mapper.Map<List<SensorDTO>>(lista);
+            foreach (var item in list1)
+            {
+                if (item.IdTipoMUnidadMNavigation is not null) {
+                    var tmum = tipounidadm.FirstOrDefault(x => item.IdTipoMUnidadM == x.IdTipoMUnidadM);
+                    item.IdTipoMUnidadMNavigation = tmum;
+                }
+            }
+            
+            return list1 ;
         }
 
         public async Task<SensorDTO?> GetByIdAsync(Guid id)
         {
-            var item = await _context.Sensors.FindAsync(id);
+            var tipounidadm = await _tipoMUnidadMService.GetAllAsync();
+            var item = await _context.Sensors
+                .Include(x => x.IdTipoMUnidadMNavigation)
+                .Include(x => x.Medicions)
+                .Include(x => x.PuntoOptimos)
+                .FirstAsync(X=>X.IdSensor== id);
+
+            if (item.IdTipoMUnidadMNavigation is not null)
+            {
+                var tmum = tipounidadm.FirstOrDefault(x => item.IdTipoMUnidadM == x.IdTipoMUnidadM);
+                item.IdTipoMUnidadMNavigation = _mapper.Map < TipoMUnidadM > (tmum);
+            }
             return item == null ? null : _mapper.Map<SensorDTO>(item);
         }
 

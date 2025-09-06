@@ -13,6 +13,7 @@ public class DispositivoDTO
     public string Sn { get; set; } = null!;
 
     public string? Descripcion { get; set; }
+
     public string? Image { get; set; }
 
     public Guid? IdTipoDispositivo { get; set; }
@@ -23,5 +24,10 @@ public class DispositivoDTO
 
     public Guid? IdEstadoDispositivo { get; set; }
 
-    public virtual ICollection<Sensor> Sensors { get; set; } = new List<Sensor>();
+    public virtual TipoDispositivoDTO? IdTipoDispositivoNavigation { get; set; }
+
+
+    public virtual ICollection<ActuadorDTO> Actuadores { get; set; } = new List<ActuadorDTO>();
+
+    public virtual ICollection<SensorDTO> Sensors { get; set; } = new List<SensorDTO>();
 }

@@ -13,13 +13,13 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<IEnumerable<ActuadorDTO>> GetAllAsync()
         {
-            var list = await _context.Actuador.ToListAsync();
+            var list = await _context.Actuador.Include(x => x.IdAccionActNavigation).ToListAsync();
             return _mapper.Map<List<ActuadorDTO>>(list);
         }
 
         public async Task<ActuadorDTO?> GetByIdAsync(Guid id)
         {
-            var item = await _context.Actuador.FindAsync(id);
+            var item = await _context.Actuador.Include(x => x.IdAccionActNavigation).FirstOrDefaultAsync(x=>x.IdActuador== id);
             return item == null ? null : _mapper.Map<ActuadorDTO>(item);
         }
 

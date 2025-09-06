@@ -12,6 +12,7 @@ public class Dispositivo
     public string? Sn { get; set; }
 
     public string? Descripcion { get; set; }
+
     public string? Image { get; set; }
 
     public Guid? IdTipoDispositivo { get; set; }
@@ -21,9 +22,11 @@ public class Dispositivo
     public Guid? IdMarca { get; set; }
 
     public Guid? IdEstadoDispositivo { get; set; }
+
     public virtual EstadoDispositivo IdEstadoDispositivoNavigation { get; set; } = null!;
 
     public virtual ICollection<Actuador> Actuadores { get; set; } = new List<Actuador>();
+
     public virtual ICollection<Auditorium> Auditoria { get; set; } = new List<Auditorium>();
 
     public virtual ICollection<Evento> Eventos { get; set; } = new List<Evento>();
