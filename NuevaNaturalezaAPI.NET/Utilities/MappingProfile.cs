@@ -9,7 +9,8 @@ namespace NuevaNaturalezaAPI.NET.Utilities
     {
         public MappingProfile()
         {
-            CreateMap<UsuarioDTO, Usuario>().ForMember(x=>x.Clave,y=>y.MapFrom(src=>Hash256.Hash(src.Clave))).ReverseMap();
+            CreateMap<UsuarioDTO, Usuario>();
+            CreateMap<Usuario, UsuarioDTO>().ForMember(dest=>dest.Clave,opt=>opt.Ignore());
 
             CreateMap<AuditoriumDTO, Auditorium >().ReverseMap();
 

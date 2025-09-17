@@ -14,4 +14,10 @@ public class EventoDTO
     public Guid IdSistema { get; set; }
 
     public DateTime FechaEvento { get; set; }
+
+    public virtual DispositivoDTO IdDispositivoNavigation { get; set; } = null!;
+
+    public virtual ImpactoDTO IdImpactoNavigation { get; set; } = null!;
+
+    public virtual SistemaDTO IdSistemaNavigation { get; set; } = null!;
 }

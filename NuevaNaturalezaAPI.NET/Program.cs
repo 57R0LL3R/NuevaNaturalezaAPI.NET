@@ -1,8 +1,9 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Services.Implementations;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
 using NuevaNaturalezaAPI.NET.Utilities;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,8 +46,13 @@ string allowAll = "allowAll";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(allowAll, policy =>
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
-              );
+    {
+        policy
+            .WithOrigins("http://localhost:4200") // tu frontend Angular
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // 👈 esto es clave
+    });       
 });
 var app = builder.Build();
 

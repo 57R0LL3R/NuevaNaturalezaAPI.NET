@@ -42,7 +42,7 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         public async Task<IActionResult> Put(Guid id, DispositivoDTO dto)
         {
             var updated = await _service.UpdateAsync(id, dto);
-            return updated ? NoContent() : BadRequest();
+            return updated ? Ok(dto) : BadRequest();
         }
 
         [HttpDelete("{id}")]

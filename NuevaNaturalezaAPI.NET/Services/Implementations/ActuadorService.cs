@@ -39,7 +39,8 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             if (dto.IdAccionAct != actuador.IdAccionAct)
             {
                 var audi = _context.Auditoria.FirstAsync(x => x.IdDispositivo == dto.IdDispositivo);
-                if (audi == null) await _context.Auditoria.AddAsync(new Auditorium(){Estado = (int)NumberStatus.InProcces, IdAccion= dto.IdAccionAct ,IdDispositivo=dto.IdDispositivo,IdUsuario= Guid.Parse("5d78da22-8c43-40f5-aa96-bfe9d531fde8") });
+                if (audi == null) await _context.Auditoria.AddAsync(new Auditorium(){Estado = (int)NumberStatus.InProcces, IdAccion= dto.IdAccionAct ,
+                    IdDispositivo=dto.IdDispositivo,IdUsuario= Guid.Parse("5d78da22-8c43-40f5-aa96-bfe9d531fde8") });
                 dto.IdAccionAct = actuador.IdAccionAct;
             }
             var entity = _mapper.Map<Actuador>(dto);
