@@ -28,13 +28,19 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<IEnumerable<NotificacionDTO>> GetAllAsync()
         {
-            var entities = await _context.Notificacions.ToListAsync();
+            var entities = await _context.Notificacions
+                .Include(x => x.IdTipoNotificacionNavigation)
+                .Include(x => x.IdTituloNavigation)
+                .ToListAsync();
             return _mapper.Map<List<NotificacionDTO>>(entities);
         }
 
         public async Task<NotificacionDTO?> GetByIdAsync(Guid id)
         {
-            var entity = await _context.Notificacions.FindAsync(id);
+            var entity = await _context.Notificacions
+                .Include(x=>x.IdTipoNotificacionNavigation)
+                .Include(x => x.IdTituloNavigation)
+                .FirstOrDefaultAsync(x=>x.IdNotificacion==id);
             return entity == null ? null : _mapper.Map<NotificacionDTO>(entity);
         }
 

@@ -17,6 +17,6 @@ public class PuntoOptimo
 
     public virtual Sensor IdSensorNavigation { get; set; } = null!;
 
-    public virtual TipoMUnidadM IdTipoMUnidadMNavigation { get; set; } = null!;
+    public virtual TipoMUnidadM? IdTipoMUnidadMNavigation { get; set; } = null!;
 
 }

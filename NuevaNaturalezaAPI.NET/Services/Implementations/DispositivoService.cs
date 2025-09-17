@@ -18,7 +18,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         public async Task<IEnumerable<DispositivoDTO>> GetAllAsync()
         {
             var sensors = await _sensorService.GetAllAsync();
-            var list = await _context.Dispositivos.Include(x=>x.IdTipoDispositivoNavigation).ToListAsync();
+            var list = await _context.Dispositivos.Include(x=>x.IdTipoDispositivoNavigation).Include(x=>x.Actuadores).Include(x => x.Sensors).ToListAsync();
             var list1 = _mapper.Map<List<DispositivoDTO>>(list);
             return list1;
         }
@@ -27,7 +27,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         {
 
             var sensors = await _sensorService.GetAllAsync();
-            var item = await _context.Dispositivos.Include(x => x.IdTipoDispositivoNavigation).FirstOrDefaultAsync(x=>x.IdDispositivo==id);
+            var item = await _context.Dispositivos.Include(x => x.IdTipoDispositivoNavigation).Include(x => x.Actuadores).Include(x => x.Sensors).FirstOrDefaultAsync(x=>x.IdDispositivo==id);
             if (item is null) return null;
             var itemf = _mapper.Map<DispositivoDTO>(item);
             return itemf ;
@@ -43,10 +43,22 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<bool> UpdateAsync(Guid id, DispositivoDTO dto)
         {
-            if (id != dto.IdDispositivo) return false;
-
+            var dispo = _context.Dispositivos.Find(id);
+            if (id != dto.IdDispositivo||dispo is null) return false;
+            
             var entity = _mapper.Map<Dispositivo>(dto);
-            _context.Entry(entity).State = EntityState.Modified;
+            if (entity.Sensors.ToArray().Length > 0)
+            {
+
+            }else if (entity.Sensors.ToArray().Length > 0)
+            {
+
+            }
+            if (dispo.Sensors.ToArray().Length > 0)
+            {
+
+            }
+                _context.Entry(entity).State = EntityState.Modified;
 
             try
             {

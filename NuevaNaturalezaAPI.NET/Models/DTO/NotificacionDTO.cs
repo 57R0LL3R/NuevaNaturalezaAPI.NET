@@ -19,7 +19,7 @@ public class NotificacionDTO
     public bool? Leido { get; set; }
 
 
-    public virtual TipoNotificacionDTO IdTipoNotificacionNavigation { get; set; } = null!;
+    public virtual TipoNotificacionDTO? IdTipoNotificacionNavigation { get; set; } = null!;
 
-    public virtual TituloDTO IdTituloNavigation { get; set; } = null!;
+    public virtual TituloDTO? IdTituloNavigation { get; set; } = null!;
 }

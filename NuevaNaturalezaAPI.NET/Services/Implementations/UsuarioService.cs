@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using NuevaNaturalezaAPI.NET.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -49,10 +50,20 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<bool> UpdateAsync(Guid id, UsuarioDTO dto)
         {
-            if (id != dto.IdUsuario) return false;
+
+            var usu = _context.Usuarios.Find(id);
+            if (id != dto.IdUsuario || usu is null) return false;
 
             var usuario = _mapper.Map<Usuario>(dto);
-            _context.Entry(usuario).State = EntityState.Modified;
+            if (usuario.Clave is null)
+            {
+                usuario.Clave = usu.Clave;
+            }
+            else
+            {
+                usuario.Clave = Hash256.Hash(usuario.Clave);
+            }
+                _context.Entry(usuario).State = EntityState.Modified;
 
             try
             {

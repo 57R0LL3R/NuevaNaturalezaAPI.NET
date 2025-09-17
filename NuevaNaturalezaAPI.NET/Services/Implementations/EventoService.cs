@@ -22,13 +22,21 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<IEnumerable<EventoDTO>> GetAllAsync()
         {
-            var lista = await _context.Eventos.ToListAsync();
+            var lista = await _context.Eventos
+                .Include(x => x.IdDispositivoNavigation)
+                .Include(x => x.IdSistemaNavigation)
+                .Include(x => x.IdImpactoNavigation)
+                .ToListAsync();
             return _mapper.Map<List<EventoDTO>>(lista);
         }
 
         public async Task<EventoDTO?> GetByIdAsync(Guid id)
         {
-            var item = await _context.Eventos.FindAsync(id);
+            var item = await _context.Eventos
+                .Include(x => x.IdDispositivoNavigation)
+                .Include(x => x.IdSistemaNavigation)
+                .Include(x => x.IdImpactoNavigation)
+                .FirstOrDefaultAsync(x=>x.IdEvento==id);
             return item == null ? null : _mapper.Map<EventoDTO>(item);
         }
 

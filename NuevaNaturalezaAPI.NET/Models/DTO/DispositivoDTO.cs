@@ -30,4 +30,5 @@ public class DispositivoDTO
     public virtual ICollection<ActuadorDTO> Actuadores { get; set; } = new List<ActuadorDTO>();
 
     public virtual ICollection<SensorDTO> Sensors { get; set; } = new List<SensorDTO>();
+    public virtual MarcaDTO? IdMarcaNavigation { get; set; }
 }

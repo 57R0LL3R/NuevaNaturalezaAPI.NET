@@ -1,4 +1,6 @@
-﻿namespace NuevaNaturalezaAPI.NET.Models.DTO
+﻿using NuevaNaturalezaAPI.NET.Models.DB;
+
+namespace NuevaNaturalezaAPI.NET.Models.DTO
 {
     public class UsuarioDTO
     {
@@ -10,11 +12,12 @@
 
         public string Correo { get; set; } = null!;
 
-        public string Clave { get; set; } = null!;
+        public string? Clave { get; set; } = "";
 
         public string Cedula { get; set; } = null!;
 
-        public string Codigo { get; set; } = null!;
+        public string? Codigo { get; set; } = null!;
+        public virtual RolDTO? IdRolNavigation { get; set; } = null!;
 
     }
 }

@@ -39,7 +39,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 .Include(x => x.IdTipoMUnidadMNavigation)
                 .Include(x => x.Medicions)
                 .Include(x => x.PuntoOptimos)
-                .FirstAsync(X=>X.IdSensor== id);
+                .FirstAsync(X => X.IdSensor == id);
 
             if (item.IdTipoMUnidadMNavigation is not null)
             {
