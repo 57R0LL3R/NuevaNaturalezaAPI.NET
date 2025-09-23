@@ -7,7 +7,7 @@ public class Medicion
 {
     public Guid IdMedicion { get; set; } = Guid.NewGuid();
 
-    public Guid IdSensor { get; set; }
+    public Guid? IdSensor { get; set; }
 
     public Guid IdFechaMedicion { get; set; }
 

@@ -16,7 +16,7 @@ public class PuntoOptimoDTO
 
     public double ValorMax { get; set; }
 
-    public virtual TipoMUnidadM? IdTipoMUnidadMNavigation { get; set; } = null!;
+    public virtual TipoMUnidadMDTO? IdTipoMUnidadMNavigation { get; set; } = null!;
 
 
 }
