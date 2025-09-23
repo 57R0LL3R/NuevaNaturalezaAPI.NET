@@ -7,7 +7,7 @@ public class PuntoOptimo
 {
     public Guid IdPuntoOptimo { get; set; } = Guid.NewGuid();
 
-    public Guid IdSensor { get; set; }
+    public Guid? IdSensor { get; set; }
 
     public Guid IdTipoMUnidadM { get; set; }
 

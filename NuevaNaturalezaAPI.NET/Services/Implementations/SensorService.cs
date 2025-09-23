@@ -7,8 +7,9 @@ using System.Linq;
 
 namespace NuevaNaturalezaAPI.NET.Services.Implementations
 {
-    public class SensorService(NuevaNatuContext context, IMapper mapper,ITipoMUnidadMService TipoMUnidadMService) : ISensorService
+    public class SensorService(NuevaNatuContext context, IMapper mapper,ITipoMUnidadMService TipoMUnidadMService,IPuntoOptimoService puntoOptimoService) : ISensorService
     {
+        private readonly IPuntoOptimoService _puntoOptimoService = puntoOptimoService;
         private readonly NuevaNatuContext _context = context;
         private readonly IMapper _mapper = mapper;
         private readonly ITipoMUnidadMService _tipoMUnidadMService = TipoMUnidadMService;
@@ -66,8 +67,22 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<bool> UpdateAsync(Guid id, SensorDTO dto)
         {
-            if (id != dto.IdSensor)
+            var oldsen = await GetByIdAsync(id);
+            if (id != dto.IdSensor||oldsen is null)
                 return false;
+
+
+
+            if (oldsen.PuntoOptimos != dto.PuntoOptimos)
+            {
+                if(dto.PuntoOptimos != null)
+                {
+
+                    await _puntoOptimoService.UpdateAsync(dto.PuntoOptimos.Last().IdPuntoOptimo,dto.PuntoOptimos.Last());
+
+                }
+                
+            }
 
             var entity = _mapper.Map<Sensor>(dto);
             _context.Entry(entity).State = EntityState.Modified;
@@ -85,7 +100,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            var entity = await _context.Sensors.FindAsync(id);
+            var entity = await _context.Sensors.Include(X=>X.PuntoOptimos).FirstOrDefaultAsync(x=>x.IdSensor==id);
             if (entity == null) return false;
 
             _context.Sensors.Remove(entity);

@@ -7,7 +7,7 @@ public class Sensor
 {
     public Guid IdSensor { get; set; } = Guid.NewGuid();
 
-    public Guid IdDispositivo { get; set; }
+    public Guid? IdDispositivo { get; set; }
 
     public Guid? IdTipoMUnidadM { get; set; }
 

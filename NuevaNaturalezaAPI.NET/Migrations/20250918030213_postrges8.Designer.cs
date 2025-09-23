@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NuevaNaturalezaAPI.NET.Models.DB;
@@ -11,9 +12,11 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 namespace NuevaNaturalezaAPI.NET.Migrations
 {
     [DbContext(typeof(NuevaNatuContext))]
-    partial class NuevaNatuContextModelSnapshot : ModelSnapshot
+    [Migration("20250918030213_postrges8")]
+    partial class postrges8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -380,7 +383,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Property<Guid>("IdSensor")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("IdDispositivo")
+                    b.Property<Guid>("IdDispositivo")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("IdTipoMUnidadM")
@@ -722,6 +725,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", "IdDispositivoNavigation")
                         .WithMany("Sensors")
                         .HasForeignKey("IdDispositivo")
+                        .IsRequired()
                         .HasConstraintName("FK__Sensor__IdDispos__5CD6CB2B");
 
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.TipoMUnidadM", "IdTipoMUnidadMNavigation")
