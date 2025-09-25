@@ -18,8 +18,18 @@ public class AuditoriumDTO
 
     public string Observacion { get; set; } = null!;
 
+    public string? UsuarioNombre { get; set; } = null!;
+
+    public string? DispositivoNombre { get; set; }
+
+    public string? AccionNombre { get; set; }
+
     public int Estado { get; set; }
+
     public DispositivoDTO? IdDispositivoNavigation { get; set; }
     public virtual UsuarioDTO? IdUsuarioNavigation { get; set; } = null!;
     public virtual AccionActDTO? IdAccionNavigation { get; set; } = null!;
+
+
+
 }

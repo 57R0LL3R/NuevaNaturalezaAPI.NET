@@ -67,25 +67,33 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<bool> UpdateAsync(Guid id, SensorDTO dto)
         {
-            var oldsen = await GetByIdAsync(id);
-            if (id != dto.IdSensor||oldsen is null)
+            var item = await _context.Sensors
+                .Include(x => x.IdTipoMUnidadMNavigation)
+                .Include(x => x.Medicions)
+                .Include(x => x.PuntoOptimos)
+                .FirstAsync(X => X.IdSensor == id);
+            //var oldsen = await GetByIdAsync(id);
+            if (id != dto.IdSensor||item is null)
                 return false;
 
+            
 
-
-            if (oldsen.PuntoOptimos != dto.PuntoOptimos)
+            
+            if(dto.PuntoOptimos != null)
             {
-                if(dto.PuntoOptimos != null)
-                {
+                if (dto.IdTipoMUnidadM != null)
+                    item.PuntoOptimos.Last().IdTipoMUnidadM = dto.IdTipoMUnidadM;
+                item.PuntoOptimos.Last().ValorMax = dto.PuntoOptimos.Last().ValorMax;
+                item.PuntoOptimos.Last().ValorMin = dto.PuntoOptimos.Last().ValorMin;
 
-                    await _puntoOptimoService.UpdateAsync(dto.PuntoOptimos.Last().IdPuntoOptimo,dto.PuntoOptimos.Last());
+                _context.Entry(item.PuntoOptimos.Last()).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
 
-                }
-                
             }
+                 
+            item.IdTipoMUnidadM = dto.IdTipoMUnidadM;
 
-            var entity = _mapper.Map<Sensor>(dto);
-            _context.Entry(entity).State = EntityState.Modified;
+            _context.Entry(item).State = EntityState.Modified;
 
             try
             {

@@ -12,7 +12,11 @@ namespace NuevaNaturalezaAPI.NET.Utilities
             CreateMap<UsuarioDTO, Usuario>();
             CreateMap<Usuario, UsuarioDTO>().ForMember(dest=>dest.Clave,opt=>opt.Ignore());
 
-            CreateMap<AuditoriumDTO, Auditorium >().ReverseMap();
+            CreateMap<AuditoriumDTO, Auditorium >();
+            CreateMap<Auditorium, AuditoriumDTO>()
+                .ForMember(dest => dest.AccionNombre, opt => opt.MapFrom(x => x.IdAccionNavigation.Accion ?? "N/A"))
+                .ForMember(dest => dest.UsuarioNombre, opt => opt.MapFrom(x => x.IdUsuarioNavigation.Nombre ?? "N/A"))
+                .ForMember(dest => dest.DispositivoNombre, opt => opt.MapFrom(x => x.IdDispositivoNavigation.Nombre ?? "N/A"));
 
             CreateMap<ActuadorDTO, Actuador>().ReverseMap();
             CreateMap<AccionActDTO, AccionAct>().ReverseMap();
