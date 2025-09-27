@@ -176,8 +176,6 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             
             item.Descripcion = dto.Descripcion;
             item.Sn = dto.Sn;
-            item.Sensors = new List<Sensor>();
-            item.Actuadores = new List<Actuador>();
             item.IdMarca = dto.IdMarca;
             item.IdMarcaNavigation = _mapper.Map<Marca>(dto.IdMarcaNavigation);
             item.Nombre = dto.Nombre;
