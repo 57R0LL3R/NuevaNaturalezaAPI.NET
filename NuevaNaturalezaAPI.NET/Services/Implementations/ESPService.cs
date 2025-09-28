@@ -5,6 +5,7 @@ using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Runtime.ConstrainedExecution;
 
 namespace NuevaNaturalezaAPI.NET.Services.Implementations
@@ -99,16 +100,17 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                     {
 
                         string nombre = kvp.Key;       // "nL"
-                        var dis = dispositivos.FirstOrDefault(x=>x.Nombre.Equals(nombre));
+                        var dis = dispositivos.FirstOrDefault(x => x.SegundoNombre?.Equals(nombre) ?? false);
                         var val = kvp.Value.ToString();
-                        double valor = Convert.ToDouble(val); // 100
+                        double valor = Convert.ToDouble(val, CultureInfo.InvariantCulture);
                         if (dis is null)
                         {
                             Dispositivo dis1 = new()
                             {
                                 Nombre = nombre,
-                                Sensors= [new()]
-                                
+                                SegundoNombre = nombre,
+                                Sensors = [new()]
+
                             };
 
                             _context.Dispositivos.Add(dis1);
@@ -117,19 +119,18 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                             sensores.Add(dis1.Sensors.First());
 
                         }
-
+                        var idsen = sensores.First(x => x.IdDispositivo == dis.IdDispositivo).IdSensor;
                         Medicion m = new()
                         {
-                            IdSensor = sensores.First(x => x.IdDispositivo == dis.IdDispositivo).IdSensor,
+                            IdSensor = idsen,
                             IdFechaMedicion = fm.IdFechaMedicion,
                             Valor = valor,
-                             
+
                         };
-                        Console.WriteLine($"{nombre}: {valor}");
                         _context.Medicions.Add(m);
                         await _context.SaveChangesAsync();
-                        foreach(var po in Puntosoptimos)
-                        {
+                        var po = Puntosoptimos.FirstOrDefault(x => x.IdSensor == idsen);
+                        if (po!=null) { 
                             if (po.IdSensor.Equals(m.IdSensor))
                             {
                                 if (m.Valor < po.ValorMin || m.Valor > po.ValorMax)
@@ -142,10 +143,12 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                                         Mensaje = "El sensor " + nombre + " tiene valores fuera del punto optimo (valor = " + valor + ")"
                                     };
 
-                                    await _service.CreateAsync(_mapper.Map<NotificacionDTO>(notificacion));
                                     _context.Add(notificacion);
+
+                                    await _context.SaveChangesAsync();
                                 }
                             }
+                        
                         }
                         
                     }
