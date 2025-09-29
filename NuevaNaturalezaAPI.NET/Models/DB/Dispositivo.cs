@@ -8,6 +8,7 @@ public class Dispositivo
     public Guid IdDispositivo { get; set; } = Guid.NewGuid();
 
     public string Nombre { get; set; } = null!;
+    public string? SegundoNombre { get; set; } = null!;
 
     public string? Sn { get; set; }
 

@@ -81,12 +81,21 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             
             if(dto.PuntoOptimos != null)
             {
-                if (dto.IdTipoMUnidadM != null)
-                    item.PuntoOptimos.Last().IdTipoMUnidadM = dto.IdTipoMUnidadM;
-                item.PuntoOptimos.Last().ValorMax = dto.PuntoOptimos.Last().ValorMax;
-                item.PuntoOptimos.Last().ValorMin = dto.PuntoOptimos.Last().ValorMin;
+                    if (item.PuntoOptimos.Count > 0)
+                    {
 
-                _context.Entry(item.PuntoOptimos.Last()).State = EntityState.Modified;
+                        if (dto.IdTipoMUnidadM != Guid.Empty)
+                        item.PuntoOptimos.Last().IdTipoMUnidadM = dto.IdTipoMUnidadM;
+                        item.PuntoOptimos.Last().ValorMax = dto.PuntoOptimos.Last().ValorMax;
+                        item.PuntoOptimos.Last().ValorMin = dto.PuntoOptimos.Last().ValorMin;
+                        _context.Entry(item.PuntoOptimos.Last()).State = EntityState.Modified;
+                    }
+                    else { 
+
+                        item.PuntoOptimos = _mapper.Map<PuntoOptimo[]>(dto.PuntoOptimos);
+                        _context.PuntoOptimos.Add(item.PuntoOptimos.Last());
+                    }
+
                 await _context.SaveChangesAsync();
 
             }

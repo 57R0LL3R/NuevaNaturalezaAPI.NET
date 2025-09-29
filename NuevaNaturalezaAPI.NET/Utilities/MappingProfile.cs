@@ -35,6 +35,8 @@ namespace NuevaNaturalezaAPI.NET.Utilities
             CreateMap<MarcaDTO, Marca>().ReverseMap();
 
             CreateMap<MedicionDTO, Medicion>().ReverseMap();
+            CreateMap<Medicion, MedicionDTO>()
+                .ForMember(dest => dest.Fecha, opt => opt.MapFrom(x => x.IdFechaMedicionNavigation.Fecha));
 
             CreateMap<NotificacionDTO, Notificacion>().ReverseMap();
 

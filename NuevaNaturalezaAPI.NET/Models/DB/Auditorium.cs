@@ -13,7 +13,9 @@ public class Auditorium
 
     public Guid? IdAccion { get; set; }
 
-    public DateTime Fecha { get; set; } = DateTime.Now;
+    public DateTime Fecha { get; set; } =
+    TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
+    TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time"));
 
     public string Observacion { get; set; } = null!;
 
