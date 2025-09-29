@@ -58,6 +58,8 @@ namespace NuevaNaturalezaAPI.NET.Utilities
 
             CreateMap<UnidadMedidumDTO, UnidadMedidum>().ReverseMap();
 
+            CreateMap<SugerenciaDTO, Sugerencia>().ReverseMap();
+
         }
     }
 }

@@ -59,9 +59,16 @@ public partial class NuevaNatuContext : DbContext
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
+    public virtual DbSet<Sugerencia> Sugerencias { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Sugerencia>(entity =>
+        {
+            entity.HasKey(e => e.IdSugerencia);
+        });
+
         modelBuilder.Entity<AccionAct>(entity =>
         {
             entity.HasKey(e => e.IdAccionAct);
