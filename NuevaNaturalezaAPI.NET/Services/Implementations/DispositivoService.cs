@@ -44,9 +44,10 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 foreach (var sensor in dispositivo.Sensors)
                 {
                     sensor.Medicions = sensor.Medicions
-                        .OrderBy(m => m.IdFechaMedicionNavigation.Fecha)
-                        .Take(20)
-                        .ToList();
+                        .OrderByDescending(m => m.IdFechaMedicionNavigation.Fecha).Take(20).ToList();
+                    sensor.Medicions = sensor.Medicions
+                        .OrderBy(m => m.IdFechaMedicionNavigation.Fecha).ToList();
+                        
                 }
             }
 
@@ -58,7 +59,21 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         {
 
             var sensors = await _sensorService.GetAllAsync();
-            var item = await _context.Dispositivos.Include(x => x.IdTipoDispositivoNavigation).Include(x => x.IdMarcaNavigation).Include(x => x.Actuadores).Include(x => x.Sensors).FirstOrDefaultAsync(x=>x.IdDispositivo==id);
+            var item = await _context.Dispositivos
+                .Include(x => x.IdTipoDispositivoNavigation)
+                .Include(x => x.IdMarcaNavigation)
+                .Include(x => x.Actuadores)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.PuntoOptimos)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.Medicions)
+                        .ThenInclude(m => m.IdFechaMedicionNavigation)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.IdTipoMUnidadMNavigation)
+                        .ThenInclude(t => t.IdTipoMedicionNavigation)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.IdTipoMUnidadMNavigation)
+                .FirstOrDefaultAsync(x=>x.IdDispositivo==id);
             if (item is null) return null;
             var itemf = _mapper.Map<DispositivoDTO>(item);
             itemf.Sensors = sensors.Where(x => x.IdDispositivo == itemf.IdDispositivo).ToList();
@@ -75,16 +90,22 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<bool> UpdateAsync(Guid id, DispositivoDTO dto)
         {
-           
-            var sensors = await _context.Sensors
-                .Include(x => x.IdTipoMUnidadMNavigation)
-                .Include(x => x.Medicions)
-                .ToListAsync();
-            var item = await _context.Dispositivos.Include(x => x.IdTipoDispositivoNavigation).Include(x => x.Actuadores).Include(x => x.Sensors).FirstOrDefaultAsync(x => x.IdDispositivo == id);
-            if (item is null) return false;
-            item.Sensors = sensors.Where(x => x.IdDispositivo == item.IdDispositivo).ToList();
-            if (id != dto.IdDispositivo||item is null) return false;
-            if (id != dto.IdDispositivo ) return false;
+            var item = await _context.Dispositivos
+                .Include(x => x.IdTipoDispositivoNavigation)
+                .Include(x => x.IdMarcaNavigation)
+                .Include(x => x.Actuadores)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.PuntoOptimos)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.Medicions)
+                        .ThenInclude(m => m.IdFechaMedicionNavigation)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.IdTipoMUnidadMNavigation)
+                        .ThenInclude(t => t.IdTipoMedicionNavigation)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.IdTipoMUnidadMNavigation)
+                .FirstOrDefaultAsync(x => x.IdDispositivo == id);
+            if (item is null || id != dto.IdDispositivo) return false;
             List<string> iddispositivo= new();
             List<SensorDTO> sensorsListDto= _mapper.Map<List<SensorDTO>>(item.Sensors.ToList());
             List<SensorDTO> sensorsToDelete = [.. sensorsListDto];
@@ -114,12 +135,14 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 }
                 foreach (var sensor in sensorsToDelete)
                 {
-                    var sen = sensors.First(x => x.IdSensor == sensor.IdSensor);
+                    var sen = item.Sensors.First(x => x.IdSensor == sensor.IdSensor);
+                    /*if(sen.Medicions is not null) 
                     foreach(var med in sen.Medicions)
                     {
                         _context.Medicions.Remove(med);
-                    }
-                    var po = _context.PuntoOptimos.Where(x => sensor.IdSensor == x.IdSensor);
+                    }*/
+                    var po = sen.PuntoOptimos?.Where(x => sensor.IdSensor == x.IdSensor);
+                    if (po is not null)
                     foreach (var med in po)
                     {
                         _context.PuntoOptimos.Remove(med);
