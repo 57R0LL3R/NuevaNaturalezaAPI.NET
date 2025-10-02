@@ -18,6 +18,8 @@ public partial class NuevaNatuContext : DbContext
     public virtual DbSet<RecuperarContrasena> RecuperarContrasena { get; set; }
     public virtual DbSet<Actuador> Actuador { get; set; }
     public virtual DbSet<AccionAct> AccionAct { get; set; }
+    public virtual DbSet<TipoExceso> TipoExceso { get; set; }
+    public virtual DbSet<ExcesoPuntoOptimo> ExcesoPuntoOptimo { get; set; }
 
     public virtual DbSet<Auditorium> Auditoria { get; set; }
 
@@ -68,6 +70,24 @@ public partial class NuevaNatuContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<TipoExceso>(entity =>
+        {
+            entity.HasKey(e => e.IdTipoExceso);
+
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(200);
+        });
+            modelBuilder.Entity<ExcesoPuntoOptimo>(entity =>
+                {
+                    entity.HasKey(e => e.IdExcesoPuntoOptimo);
+
+                    entity.HasOne(d => d.IdPuntoOptimoNavigation).WithMany(d => d.ExcesoPuntosOptimos).HasForeignKey(d => d.IdPuntoOptimo);
+
+                    entity.HasOne(d => d.IdTipoExcesoNavigation).WithMany(d => d.ExcesoPuntoOptimo).HasForeignKey(d => d.IdTipoExceso);
+                    entity.HasOne(d => d.IdAccionActNavigation).WithMany(d => d.ExcesoPuntoOptimo).HasForeignKey(d => d.IdAccionAct);
+                    entity.HasOne(d => d.IdDispositivoNavigation).WithMany(d => d.ExcesoPuntoOptimo).HasForeignKey(d => d.IdDispositivo);
+                });
+
         modelBuilder.Entity<Checklist>(entity =>
         {
             entity.HasKey(e => e.IdChecklist);
@@ -318,6 +338,7 @@ public partial class NuevaNatuContext : DbContext
                 .HasForeignKey(d => d.IdTipoMUnidadM)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__PuntoOpti__IdUni__628FA481");
+
         });
 
         modelBuilder.Entity<Rol>(entity =>
