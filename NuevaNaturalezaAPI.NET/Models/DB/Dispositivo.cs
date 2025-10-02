@@ -40,4 +40,7 @@ public class Dispositivo
     public virtual ICollection<ExcesoPuntoOptimo> ExcesoPuntoOptimo { get; set; }
 
     public virtual ICollection<Sensor> Sensors { get; set; } = new List<Sensor>();
+
+    public virtual ICollection<ChecklistDetalle> ChecklistDetalles { get; set; } = new List<ChecklistDetalle>();
+
 }

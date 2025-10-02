@@ -43,6 +43,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.AddScoped<IExcesoPOService, ExcesoPOService>();
 builder.Services.AddScoped<ITipoExcesoService, TipoExcesoService>();
+builder.Services.AddScoped<ISugerenciaService, SugerenciaService>();
+
 
 string allowAll = "allowAll";
 builder.Services.AddCors(options =>

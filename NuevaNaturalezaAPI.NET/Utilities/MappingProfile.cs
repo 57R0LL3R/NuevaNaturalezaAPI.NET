@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using NuevaNaturalezaAPI.NET.DTOs;
 using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 
@@ -63,6 +64,10 @@ namespace NuevaNaturalezaAPI.NET.Utilities
             CreateMap<TituloDTO, Titulo>().ReverseMap();
 
             CreateMap<UnidadMedidumDTO, UnidadMedidum>().ReverseMap();
+
+            CreateMap<SugerenciaDTO, Sugerencia>().ReverseMap();
+
+            CreateMap<ChecklistDTO, Checklist>().ReverseMap();
 
         }
     }
