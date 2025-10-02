@@ -61,9 +61,45 @@ public partial class NuevaNatuContext : DbContext
 
     public virtual DbSet<Sugerencia> Sugerencias { get; set; }
 
+    public virtual DbSet<Checklist> Checklists { get; set; }
+
+    public virtual DbSet<ChecklistDetalle> ChecklistDetalles { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Checklist>(entity =>
+        {
+            entity.HasKey(e => e.IdChecklist);
+
+            entity.ToTable("Checklist");
+
+            entity.Property(e => e.IdChecklist).ValueGeneratedNever();
+            entity.Property(e => e.Usuario).HasMaxLength(100);
+            entity.Property(e => e.ObservacionesGenerales).HasMaxLength(500);
+
+            // Relación con detalles
+            entity.HasMany(e => e.Detalles)
+                  .WithOne(d => d.Checklist)
+                  .HasForeignKey(d => d.IdChecklist);
+        });
+
+        modelBuilder.Entity<ChecklistDetalle>(entity =>
+        {
+            entity.HasKey(e => e.IdDetalle);
+
+            entity.ToTable("ChecklistDetalle");
+
+            entity.Property(e => e.IdDetalle).ValueGeneratedNever();
+            entity.Property(e => e.Tipo).HasMaxLength(50);
+            entity.Property(e => e.ValorRegistrado).HasMaxLength(200);
+
+            // Relación con dispositivo
+            entity.HasOne(d => d.IdDispositivoNavigation)
+                  .WithMany(p => p.ChecklistDetalles) // 🔹 hay que agregar ICollection en Dispositivo
+                  .HasForeignKey(d => d.IdDispositivo);
+        });
+
         modelBuilder.Entity<Sugerencia>(entity =>
         {
             entity.HasKey(e => e.IdSugerencia);

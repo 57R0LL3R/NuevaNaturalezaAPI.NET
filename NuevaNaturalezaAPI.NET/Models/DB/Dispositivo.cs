@@ -39,4 +39,7 @@ public class Dispositivo
     public virtual TipoDispositivo? IdTipoDispositivoNavigation { get; set; }
 
     public virtual ICollection<Sensor> Sensors { get; set; } = new List<Sensor>();
+
+    public virtual ICollection<ChecklistDetalle> ChecklistDetalles { get; set; } = new List<ChecklistDetalle>();
+
 }
