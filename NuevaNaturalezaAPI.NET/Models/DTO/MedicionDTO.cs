@@ -14,4 +14,5 @@ public class MedicionDTO
     public Guid? IdTipoMUnidadM { get; set; }
 
     public double Valor { get; set; }
+    public DateTime Fecha { get; set; }
 }

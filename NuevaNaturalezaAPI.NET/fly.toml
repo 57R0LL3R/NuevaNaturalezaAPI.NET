@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for nuevanaturalezaapi-net on 2025-08-14T14:30:47-05:00
+# fly.toml app configuration file generated for nuevanaturalezaapi-net on 2025-09-28T14:58:50-05:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = 'nuevanaturalezaapi-net'
-primary_region = 'bog'
+primary_region = 'iad'
 
 [build]
 

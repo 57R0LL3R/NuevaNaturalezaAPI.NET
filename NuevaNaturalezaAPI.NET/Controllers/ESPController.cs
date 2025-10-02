@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
-
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
     [Route("api/[controller]")]
@@ -13,9 +12,21 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         private readonly IESPService _service = service;
 
         [HttpPost("Medidas")]
-        public async Task<IActionResult> Data(MedicionesESP medicion)
+        public async Task<IActionResult> Data(MedicionesESP[] medicion)
         {
-            return Ok(await _service.UpdateMedicions(medicion));
+            Response resf = new();
+            foreach (var med in medicion)
+            {
+               var res = await _service.UpdateMedicions(med);
+                resf = res;
+                if (res.NumberResponse == (int)NumberResponses.Error){
+                
+                    break;
+
+                }
+                
+            }
+            return resf.NumberResponse==(int)NumberResponses.Correct ? Ok(resf): BadRequest(resf);
         }
 
         [HttpGet("Estados")]
