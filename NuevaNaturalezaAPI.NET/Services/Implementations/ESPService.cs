@@ -67,7 +67,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 var act = actuadores.Find(x => x.IdDispositivo == auditorias[i].IdDispositivo);
                 if(act != null)
                 {
-                    outputs += auditorias[i].IdAccion.Value.Equals(typeAccions.FirstOrDefault(x=>x.Accion.Equals("Max")).IdAccionAct) ? act.On : act.Off;
+                    outputs += auditorias[i].IdAccion.Value.Equals(typeAccions.FirstOrDefault(x=>x.Accion.Equals("On")).IdAccionAct) ? act.On : act.Off;
                     outputs += ",";
                 }
             }
@@ -84,14 +84,18 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 var tipoNoti = await _context.TipoNotificacions.ToListAsync();
                 var dispositivos = _context.Dispositivos.ToList();
                 var sensores = _context.Sensors.ToList();
-                var Puntosoptimos = await _context.PuntoOptimos.Include(x => x.IdSensorNavigation.IdDispositivoNavigation).ToListAsync();
+                var Puntosoptimos = await _context.PuntoOptimos.Include(x => x.IdSensorNavigation.IdDispositivoNavigation)
+                  .ToListAsync();
 
                 if (mediciones.DatosSensores is null) {
                     return new();
                 }
-
                 FechaMedicion fm;
                 fm = new();
+                if (mediciones.Fecha != null)
+                {
+                    fm.Fecha = (DateTime)mediciones.Fecha;
+                }
                 _context.FechaMedicions.Add(fm);
                 await _context.SaveChangesAsync();
                 foreach (var sensor in mediciones.DatosSensores)

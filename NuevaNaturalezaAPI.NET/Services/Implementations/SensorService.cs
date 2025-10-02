@@ -17,18 +17,14 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         {
             var tipounidadm = await _tipoMUnidadMService.GetAllAsync();
             var lista = await _context.Sensors
-                .Include(x=>x.IdTipoMUnidadMNavigation)
+                .Include(s => s.IdTipoMUnidadMNavigation)
+                        .ThenInclude(t => t.IdTipoMedicionNavigation)
+                .Include(s => s.IdTipoMUnidadMNavigation)
+                        .ThenInclude(t => t.IdUnidadMedidaNavigation)
                 .Include(x => x.Medicions)
                 .Include(x => x.PuntoOptimos)
                 .ToListAsync();
             var list1 = _mapper.Map<List<SensorDTO>>(lista);
-            foreach (var item in list1)
-            {
-                if (item.IdTipoMUnidadMNavigation is not null) {
-                    var tmum = tipounidadm.FirstOrDefault(x => item.IdTipoMUnidadM == x.IdTipoMUnidadM);
-                    item.IdTipoMUnidadMNavigation = tmum;
-                }
-            }
             
             return list1 ;
         }
@@ -37,16 +33,14 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         {
             var tipounidadm = await _tipoMUnidadMService.GetAllAsync();
             var item = await _context.Sensors
-                .Include(x => x.IdTipoMUnidadMNavigation)
+                .Include(s => s.IdTipoMUnidadMNavigation)
+                        .ThenInclude(t => t.IdTipoMedicionNavigation)
+                .Include(s => s.IdTipoMUnidadMNavigation)
+                        .ThenInclude(t => t.IdUnidadMedidaNavigation)
                 .Include(x => x.Medicions)
                 .Include(x => x.PuntoOptimos)
                 .FirstAsync(X => X.IdSensor == id);
 
-            if (item.IdTipoMUnidadMNavigation is not null)
-            {
-                var tmum = tipounidadm.FirstOrDefault(x => item.IdTipoMUnidadM == x.IdTipoMUnidadM);
-                item.IdTipoMUnidadMNavigation = _mapper.Map < TipoMUnidadM > (tmum);
-            }
             return item == null ? null : _mapper.Map<SensorDTO>(item);
         }
 

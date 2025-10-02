@@ -228,13 +228,16 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         public async Task<bool> DeleteAsync(Guid id)
         {
 
-            var item = await _context.Dispositivos.Include(x => x.IdTipoDispositivoNavigation).Include(x => x.Eventos).Include(x=>x.Auditoria).Include(x => x.Actuadores).FirstOrDefaultAsync(x => x.IdDispositivo == id);
-            if (item is null) return false;
-            item.Sensors = _context.Sensors.Where(x => x.IdDispositivo == item.IdDispositivo)
-                .Include(x => x.Medicions)
-                .Include(x => x.PuntoOptimos).ToList();
-            item.Actuadores= _context.Actuador.Where(x => x.IdDispositivo == item.IdDispositivo)
-                .ToList();
+            var item = await _context.Dispositivos
+                .Include(x => x.IdTipoDispositivoNavigation)
+                .Include(x => x.Eventos)
+                .Include(x=>x.Auditoria)
+                .Include(x => x.Actuadores)
+                .Include(x=>x.Sensors)
+                    .ThenInclude(x=>x.Medicions)
+                .Include(x => x.Sensors)
+                    .ThenInclude(x => x.PuntoOptimos)
+                .FirstOrDefaultAsync(x => x.IdDispositivo == id);
             if (item is null) return false;
             if (item.Eventos.Count > 0)
             {

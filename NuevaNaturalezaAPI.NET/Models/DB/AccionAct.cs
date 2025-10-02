@@ -11,4 +11,5 @@ public class AccionAct
     public virtual ICollection<Actuador> Actuadores { get; set; } = new List<Actuador>();
 
     public virtual ICollection<Auditorium> Auditoria { get; set; } = new List<Auditorium>();
+    public virtual ICollection<ExcesoPuntoOptimo> ExcesoPuntoOptimo { get; set; }
 }

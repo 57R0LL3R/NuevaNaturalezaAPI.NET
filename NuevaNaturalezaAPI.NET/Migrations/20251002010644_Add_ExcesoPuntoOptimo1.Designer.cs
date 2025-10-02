@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NuevaNaturalezaAPI.NET.Models.DB;
@@ -11,9 +12,11 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 namespace NuevaNaturalezaAPI.NET.Migrations
 {
     [DbContext(typeof(NuevaNatuContext))]
-    partial class NuevaNatuContextModelSnapshot : ModelSnapshot
+    [Migration("20251002010644_Add_ExcesoPuntoOptimo1")]
+    partial class Add_ExcesoPuntoOptimo1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -213,7 +216,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Property<Guid?>("IdAccionAct")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("IdDispositivo")
+                    b.Property<Guid>("IdActuador")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("IdPuntoOptimo")
@@ -226,7 +229,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
 
                     b.HasIndex("IdAccionAct");
 
-                    b.HasIndex("IdDispositivo");
+                    b.HasIndex("IdActuador");
 
                     b.HasIndex("IdPuntoOptimo");
 
@@ -710,9 +713,9 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                         .WithMany("ExcesoPuntoOptimo")
                         .HasForeignKey("IdAccionAct");
 
-                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", "IdDispositivoNavigation")
+                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Actuador", "IdActuadorNavigation")
                         .WithMany("ExcesoPuntoOptimo")
-                        .HasForeignKey("IdDispositivo")
+                        .HasForeignKey("IdActuador")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -726,7 +729,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
 
                     b.Navigation("IdAccionActNavigation");
 
-                    b.Navigation("IdDispositivoNavigation");
+                    b.Navigation("IdActuadorNavigation");
 
                     b.Navigation("IdPuntoOptimoNavigation");
 
@@ -853,6 +856,8 @@ namespace NuevaNaturalezaAPI.NET.Migrations
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Actuador", b =>
                 {
                     b.Navigation("Auditoria");
+
+                    b.Navigation("ExcesoPuntoOptimo");
                 });
 
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", b =>
@@ -862,8 +867,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Navigation("Auditoria");
 
                     b.Navigation("Eventos");
-
-                    b.Navigation("ExcesoPuntoOptimo");
 
                     b.Navigation("Sensors");
                 });
