@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NuevaNaturalezaAPI.NET.Models.DB;
@@ -11,9 +12,11 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 namespace NuevaNaturalezaAPI.NET.Migrations
 {
     [DbContext(typeof(NuevaNatuContext))]
-    partial class NuevaNatuContextModelSnapshot : ModelSnapshot
+    [Migration("20250927230144_postgreS10")]
+    partial class postgreS10
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,58 +111,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.ToTable("Auditoria");
                 });
 
-            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Checklist", b =>
-                {
-                    b.Property<Guid>("IdChecklist")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ObservacionesGenerales")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("Usuario")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("IdChecklist");
-
-                    b.ToTable("Checklist", (string)null);
-                });
-
-            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.ChecklistDetalle", b =>
-                {
-                    b.Property<Guid>("IdDetalle")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("IdChecklist")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("IdDispositivo")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Tipo")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("ValorRegistrado")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.HasKey("IdDetalle");
-
-                    b.HasIndex("IdChecklist");
-
-                    b.HasIndex("IdDispositivo");
-
-                    b.ToTable("ChecklistDetalle", (string)null);
-                });
-
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", b =>
                 {
                     b.Property<Guid>("IdDispositivo")
@@ -190,7 +141,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("SegundoNombre")
-
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Sn")
@@ -210,31 +161,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.HasIndex("IdTipoDispositivo");
 
                     b.ToTable("Dispositivo", (string)null);
-                });
-
-            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Dosificador", b =>
-                {
-                    b.Property<Guid>("IdDosificador")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<string>("Descripcion")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<Guid>("IdDispositivo")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("LetraActivacion")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.HasKey("IdDosificador");
-
-                    b.HasIndex("IdDispositivo");
-
-                    b.ToTable("Dosificadores");
                 });
 
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.EstadoDispositivo", b =>
@@ -391,37 +317,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.ToTable("Notificacion", (string)null);
                 });
 
-            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.ProgramacionDosificador", b =>
-                {
-                    b.Property<Guid>("IdProgramacion")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<Guid?>("DispositivoIdDispositivo")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Hora")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("IdDosificador")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Minuto")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TiempoSegundos")
-                        .HasColumnType("integer");
-
-                    b.HasKey("IdProgramacion");
-
-                    b.HasIndex("DispositivoIdDispositivo");
-
-                    b.HasIndex("IdDosificador");
-
-                    b.ToTable("ProgramacionDosificadores");
-                });
-
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.PuntoOptimo", b =>
                 {
                     b.Property<Guid>("IdPuntoOptimo")
@@ -522,30 +417,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                         .HasName("PK__Sistema__48B026F42391412D");
 
                     b.ToTable("Sistema", (string)null);
-                });
-
-            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Sugerencia", b =>
-                {
-                    b.Property<Guid>("IdSugerencia")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Correo")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Mensaje")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Usuario")
-                        .HasColumnType("text");
-
-                    b.HasKey("IdSugerencia");
-
-                    b.ToTable("Sugerencias");
                 });
 
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.TipoDispositivo", b =>
@@ -733,25 +604,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Navigation("IdUsuarioNavigation");
                 });
 
-            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.ChecklistDetalle", b =>
-                {
-                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Checklist", "Checklist")
-                        .WithMany("Detalles")
-                        .HasForeignKey("IdChecklist")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", "IdDispositivoNavigation")
-                        .WithMany("ChecklistDetalles")
-                        .HasForeignKey("IdDispositivo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Checklist");
-
-                    b.Navigation("IdDispositivoNavigation");
-                });
-
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", b =>
                 {
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.EstadoDispositivo", "IdEstadoDispositivoNavigation")
@@ -780,17 +632,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Navigation("IdSistemaNavigation");
 
                     b.Navigation("IdTipoDispositivoNavigation");
-                });
-
-            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Dosificador", b =>
-                {
-                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", "IdDispositivoNavigation")
-                        .WithMany("Dosificadores")
-                        .HasForeignKey("IdDispositivo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("IdDispositivoNavigation");
                 });
 
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Evento", b =>
@@ -862,21 +703,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Navigation("IdTipoNotificacionNavigation");
 
                     b.Navigation("IdTituloNavigation");
-                });
-
-            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.ProgramacionDosificador", b =>
-                {
-                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", null)
-                        .WithMany("ProgramacionDosificadores")
-                        .HasForeignKey("DispositivoIdDispositivo");
-
-                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Dosificador", "Dosificador")
-                        .WithMany("Programaciones")
-                        .HasForeignKey("IdDosificador")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Dosificador");
                 });
 
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.PuntoOptimo", b =>
@@ -955,33 +781,15 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Navigation("Auditoria");
                 });
 
-            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Checklist", b =>
-                {
-                    b.Navigation("Detalles");
-                });
-
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", b =>
                 {
                     b.Navigation("Actuadores");
 
                     b.Navigation("Auditoria");
 
-                    b.Navigation("ChecklistDetalles");
-
-                    b.Navigation("Dosificadores");
-
                     b.Navigation("Eventos");
 
-                    b.Navigation("ExcesoPuntoOptimo");
-
-                    b.Navigation("ProgramacionDosificadores");
-
                     b.Navigation("Sensors");
-                });
-
-            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Dosificador", b =>
-                {
-                    b.Navigation("Programaciones");
                 });
 
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.EstadoDispositivo", b =>

@@ -13,7 +13,9 @@ public class Evento
 
     public Guid IdSistema { get; set; }
 
-    public DateTime FechaEvento { get; set; }
+    public DateTime FechaEvento { get; set; } =
+    TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
+    TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time"));
 
     public virtual Dispositivo IdDispositivoNavigation { get; set; } = null!;
 

@@ -22,44 +22,36 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<IEnumerable<DispositivoDTO>> GetAllAsync()
         {
-            var sensors = await _sensorService.GetAllAsync();
-           
-            List<Guid> idsDispos = new List<Guid>();
-            List<List<SensorDTO>> sensorsbydispo = new List<List<SensorDTO>>();
-            var isNew = true;
-            foreach (var sensor in sensors) {
 
-                isNew = true;
-                foreach (var iddispo in idsDispos)
-                {
-                    if(sensor.IdDispositivo == iddispo)
-                    {
-                        isNew = false;
-                    }
-                }
-                if (isNew) {
-                    idsDispos.Add(sensor.IdDispositivo);
-                    sensorsbydispo.Add([sensor]);
-                }
-                else
-                {
-                    int index = idsDispos.IndexOf(sensor.IdDispositivo);
-                    sensorsbydispo[index].Add(sensor);
-                }
-            }
-            var list = await _context.Dispositivos.Include(x=>x.IdTipoDispositivoNavigation).Include(x => x.IdMarcaNavigation).Include(x=>x.Actuadores).Include(x => x.Sensors).ToListAsync();
-            
-            var list1 = _mapper.Map<List<DispositivoDTO>>(list);
-            for (var i = 0;i<idsDispos.LongCount();i++  ) 
+            var dispositivos = await _context.Dispositivos
+                .Include(d => d.IdTipoDispositivoNavigation)
+                .Include(d => d.IdMarcaNavigation)
+                .Include(d => d.Actuadores)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.PuntoOptimos)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.Medicions)
+                        .ThenInclude(m => m.IdFechaMedicionNavigation)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.IdTipoMUnidadMNavigation)
+                        .ThenInclude(t => t.IdTipoMedicionNavigation)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.IdTipoMUnidadMNavigation)
+                        .ThenInclude(t => t.IdUnidadMedidaNavigation)
+                .ToListAsync();
+            foreach (var dispositivo in dispositivos)
             {
-                var dis = list1.FirstOrDefault(x => x.IdDispositivo == idsDispos[i]);
-                if(dis != null)
+                foreach (var sensor in dispositivo.Sensors)
                 {
-                    dis.Sensors = sensorsbydispo[i];
+                    sensor.Medicions = sensor.Medicions
+                        .OrderByDescending(m => m.IdFechaMedicionNavigation.Fecha).Take(20).ToList();
+                    sensor.Medicions = sensor.Medicions
+                        .OrderBy(m => m.IdFechaMedicionNavigation.Fecha).ToList();
+                        
                 }
-
-                
             }
+
+            var list1 = _mapper.Map<List<DispositivoDTO>>(dispositivos);
             return list1;
         }
 
@@ -67,7 +59,21 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         {
 
             var sensors = await _sensorService.GetAllAsync();
-            var item = await _context.Dispositivos.Include(x => x.IdTipoDispositivoNavigation).Include(x => x.IdMarcaNavigation).Include(x => x.Actuadores).Include(x => x.Sensors).FirstOrDefaultAsync(x=>x.IdDispositivo==id);
+            var item = await _context.Dispositivos
+                .Include(x => x.IdTipoDispositivoNavigation)
+                .Include(x => x.IdMarcaNavigation)
+                .Include(x => x.Actuadores)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.PuntoOptimos)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.Medicions)
+                        .ThenInclude(m => m.IdFechaMedicionNavigation)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.IdTipoMUnidadMNavigation)
+                        .ThenInclude(t => t.IdTipoMedicionNavigation)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.IdTipoMUnidadMNavigation)
+                .FirstOrDefaultAsync(x=>x.IdDispositivo==id);
             if (item is null) return null;
             var itemf = _mapper.Map<DispositivoDTO>(item);
             itemf.Sensors = sensors.Where(x => x.IdDispositivo == itemf.IdDispositivo).ToList();
@@ -84,16 +90,22 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<bool> UpdateAsync(Guid id, DispositivoDTO dto)
         {
-           
-            var sensors = await _context.Sensors
-                .Include(x => x.IdTipoMUnidadMNavigation)
-                .Include(x => x.Medicions)
-                .ToListAsync();
-            var item = await _context.Dispositivos.Include(x => x.IdTipoDispositivoNavigation).Include(x => x.Actuadores).Include(x => x.Sensors).FirstOrDefaultAsync(x => x.IdDispositivo == id);
-            if (item is null) return false;
-            item.Sensors = sensors.Where(x => x.IdDispositivo == item.IdDispositivo).ToList();
-            if (id != dto.IdDispositivo||item is null) return false;
-            if (id != dto.IdDispositivo ) return false;
+            var item = await _context.Dispositivos
+                .Include(x => x.IdTipoDispositivoNavigation)
+                .Include(x => x.IdMarcaNavigation)
+                .Include(x => x.Actuadores)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.PuntoOptimos)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.Medicions)
+                        .ThenInclude(m => m.IdFechaMedicionNavigation)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.IdTipoMUnidadMNavigation)
+                        .ThenInclude(t => t.IdTipoMedicionNavigation)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.IdTipoMUnidadMNavigation)
+                .FirstOrDefaultAsync(x => x.IdDispositivo == id);
+            if (item is null || id != dto.IdDispositivo) return false;
             List<string> iddispositivo= new();
             List<SensorDTO> sensorsListDto= _mapper.Map<List<SensorDTO>>(item.Sensors.ToList());
             List<SensorDTO> sensorsToDelete = [.. sensorsListDto];
@@ -123,12 +135,14 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 }
                 foreach (var sensor in sensorsToDelete)
                 {
-                    var sen = sensors.First(x => x.IdSensor == sensor.IdSensor);
+                    var sen = item.Sensors.First(x => x.IdSensor == sensor.IdSensor);
+                    /*if(sen.Medicions is not null) 
                     foreach(var med in sen.Medicions)
                     {
                         _context.Medicions.Remove(med);
-                    }
-                    var po = _context.PuntoOptimos.Where(x => sensor.IdSensor == x.IdSensor);
+                    }*/
+                    var po = sen.PuntoOptimos?.Where(x => sensor.IdSensor == x.IdSensor);
+                    if (po is not null)
                     foreach (var med in po)
                     {
                         _context.PuntoOptimos.Remove(med);
@@ -176,8 +190,6 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             
             item.Descripcion = dto.Descripcion;
             item.Sn = dto.Sn;
-            item.Sensors = new List<Sensor>();
-            item.Actuadores = new List<Actuador>();
             item.IdMarca = dto.IdMarca;
             item.IdMarcaNavigation = _mapper.Map<Marca>(dto.IdMarcaNavigation);
             item.Nombre = dto.Nombre;
@@ -215,10 +227,26 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         }
         public async Task<bool> DeleteAsync(Guid id)
         {
-            var entity = await GetByIdAsync(id);
-            if (entity == null) return false;
-            var dispo = _mapper.Map<Dispositivo>(entity);
-            _context.Dispositivos.Remove(dispo);
+
+            var item = await _context.Dispositivos.Include(x => x.IdTipoDispositivoNavigation).Include(x => x.Eventos).Include(x=>x.Auditoria).Include(x => x.Actuadores).FirstOrDefaultAsync(x => x.IdDispositivo == id);
+            if (item is null) return false;
+            item.Sensors = _context.Sensors.Where(x => x.IdDispositivo == item.IdDispositivo)
+                .Include(x => x.Medicions)
+                .Include(x => x.PuntoOptimos).ToList();
+            item.Actuadores= _context.Actuador.Where(x => x.IdDispositivo == item.IdDispositivo)
+                .ToList();
+            if (item is null) return false;
+            if (item.Eventos.Count > 0)
+            {
+                _context.Eventos.RemoveRange(item.Eventos);
+                await _context.SaveChangesAsync();
+            }
+            if (item.Auditoria.Count>0)
+            {
+                _context.Auditoria.RemoveRange(item.Auditoria);
+                await _context.SaveChangesAsync();
+            }
+            _context.Dispositivos.Remove(item);
             await _context.SaveChangesAsync();
             return true;
         }
