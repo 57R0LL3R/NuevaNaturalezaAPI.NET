@@ -18,5 +18,6 @@ public class PuntoOptimoDTO
 
     public virtual TipoMUnidadMDTO? IdTipoMUnidadMNavigation { get; set; } = null!;
 
+    public virtual ICollection<ExcesoPuntoOptimoDTO>? ExcesoPuntosOptimos { get; set; }
 
 }

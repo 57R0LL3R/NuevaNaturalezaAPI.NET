@@ -9,6 +9,6 @@ namespace NuevaNaturalezaAPI.NET.Models.DTO
     {
         public int NumberResponse { get; set; } = (int)NumberResponses.Error;
         public string Message { get; set; } = string.Empty;
-        public dynamic? Data { get; set; }
+        public object? Data { get; set; }
     }
 }

@@ -24,6 +24,10 @@ namespace NuevaNaturalezaAPI.NET.Utilities
 
 
             CreateMap<DispositivoDTO, Dispositivo>().ReverseMap();
+            CreateMap<TipoExcesoDTO, TipoExceso>().ReverseMap();
+
+            CreateMap<ExcesoPuntoOptimoDTO, ExcesoPuntoOptimo>().ReverseMap();
+
 
             CreateMap<EstadoDispositivoDTO, EstadoDispositivo>().ReverseMap();
 

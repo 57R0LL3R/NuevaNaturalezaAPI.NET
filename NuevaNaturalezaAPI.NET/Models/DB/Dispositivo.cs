@@ -37,6 +37,7 @@ public class Dispositivo
     public virtual Sistema? IdSistemaNavigation { get; set; }
 
     public virtual TipoDispositivo? IdTipoDispositivoNavigation { get; set; }
+    public virtual ICollection<ExcesoPuntoOptimo> ExcesoPuntoOptimo { get; set; }
 
     public virtual ICollection<Sensor> Sensors { get; set; } = new List<Sensor>();
 
