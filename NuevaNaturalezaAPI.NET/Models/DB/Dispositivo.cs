@@ -41,4 +41,9 @@ public class Dispositivo
 
     public virtual ICollection<ChecklistDetalle> ChecklistDetalles { get; set; } = new List<ChecklistDetalle>();
 
+    // en Models/DB/Dispositivo.cs (dentro de la clase Dispositivo)
+    public virtual ICollection<ProgramacionDosificador>? ProgramacionDosificadores { get; set; }
+
+    public virtual ICollection<Dosificador>? Dosificadores { get; set; } = new List<Dosificador>();
+
 }

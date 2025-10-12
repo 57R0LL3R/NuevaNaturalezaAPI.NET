@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NuevaNaturalezaAPI.NET.Models.DB;
@@ -11,9 +12,11 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 namespace NuevaNaturalezaAPI.NET.Migrations
 {
     [DbContext(typeof(NuevaNatuContext))]
-    partial class NuevaNatuContextModelSnapshot : ModelSnapshot
+    [Migration("20251011214127_AddDosificadorAndProgramacion")]
+    partial class AddDosificadorAndProgramacion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -279,6 +282,37 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.HasIndex("IdSistema");
 
                     b.ToTable("Evento", (string)null);
+                });
+
+            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.ExcesoPuntoOptimo", b =>
+                {
+                    b.Property<Guid>("IdExcesoPuntoOptimo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("IdAccionAct")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("IdDispositivo")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("IdPuntoOptimo")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("IdTipoExceso")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("IdExcesoPuntoOptimo");
+
+                    b.HasIndex("IdAccionAct");
+
+                    b.HasIndex("IdDispositivo");
+
+                    b.HasIndex("IdPuntoOptimo");
+
+                    b.HasIndex("IdTipoExceso");
+
+                    b.ToTable("ExcesoPuntoOptimo");
                 });
 
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.FechaMedicion", b =>
@@ -563,6 +597,22 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.ToTable("TipoDispositivo", (string)null);
                 });
 
+            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.TipoExceso", b =>
+                {
+                    b.Property<Guid>("IdTipoExceso")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("IdTipoExceso");
+
+                    b.ToTable("TipoExceso");
+                });
+
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.TipoMUnidadM", b =>
                 {
                     b.Property<Guid>("IdTipoMUnidadM")
@@ -819,6 +869,35 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Navigation("IdSistemaNavigation");
                 });
 
+            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.ExcesoPuntoOptimo", b =>
+                {
+                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.AccionAct", "IdAccionActNavigation")
+                        .WithMany("ExcesoPuntoOptimo")
+                        .HasForeignKey("IdAccionAct");
+
+                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", "IdDispositivoNavigation")
+                        .WithMany("ExcesoPuntoOptimo")
+                        .HasForeignKey("IdDispositivo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.PuntoOptimo", "IdPuntoOptimoNavigation")
+                        .WithMany("ExcesoPuntosOptimos")
+                        .HasForeignKey("IdPuntoOptimo");
+
+                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.TipoExceso", "IdTipoExcesoNavigation")
+                        .WithMany("ExcesoPuntoOptimo")
+                        .HasForeignKey("IdTipoExceso");
+
+                    b.Navigation("IdAccionActNavigation");
+
+                    b.Navigation("IdDispositivoNavigation");
+
+                    b.Navigation("IdPuntoOptimoNavigation");
+
+                    b.Navigation("IdTipoExcesoNavigation");
+                });
+
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Medicion", b =>
                 {
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.FechaMedicion", "IdFechaMedicionNavigation")
@@ -947,6 +1026,8 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Navigation("Actuadores");
 
                     b.Navigation("Auditoria");
+
+                    b.Navigation("ExcesoPuntoOptimo");
                 });
 
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Actuador", b =>
@@ -1003,6 +1084,11 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Navigation("Dispositivos");
                 });
 
+            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.PuntoOptimo", b =>
+                {
+                    b.Navigation("ExcesoPuntosOptimos");
+                });
+
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Rol", b =>
                 {
                     b.Navigation("Usuarios");
@@ -1025,6 +1111,11 @@ namespace NuevaNaturalezaAPI.NET.Migrations
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.TipoDispositivo", b =>
                 {
                     b.Navigation("Dispositivos");
+                });
+
+            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.TipoExceso", b =>
+                {
+                    b.Navigation("ExcesoPuntoOptimo");
                 });
 
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.TipoMUnidadM", b =>

@@ -63,6 +63,13 @@ namespace NuevaNaturalezaAPI.NET.Utilities
 
             CreateMap<ChecklistDTO, Checklist>().ReverseMap();
 
+            CreateMap<ProgramacionDosificador, ProgramacionDosificadorDTO>()
+                .ForMember(dest => dest.NombreDosificador, opt => opt.MapFrom(src => src.Dosificador != null ? src.Dosificador.IdDispositivoNavigation.Nombre : src.Dosificador.LetraActivacion))
+                .ReverseMap()
+                .ForMember(dest => dest.Dosificador, opt => opt.Ignore());
+
+            CreateMap<DosificadorDTO, Dosificador>().ReverseMap();
+
         }
     }
 }
