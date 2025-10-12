@@ -13,13 +13,13 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<IEnumerable<ExcesoPuntoOptimoDTO>> GetAllAsync()
         {
-            var list = await _context.ExcesoPuntoOptimo.ToListAsync();
+            var list = await _context.ExcesoPuntoOptimo.Include(x=>x.IdAccionActNavigation).Include(x => x.IdTipoExcesoNavigation).ToListAsync();
             return _mapper.Map<List<ExcesoPuntoOptimoDTO>>(list);
         }
 
         public async Task<ExcesoPuntoOptimoDTO?> GetByIdAsync(Guid id)
         {
-            var item = await _context.ExcesoPuntoOptimo.FindAsync(id);
+            var item = await _context.ExcesoPuntoOptimo.Include(x => x.IdAccionActNavigation).Include(x => x.IdTipoExcesoNavigation).FirstOrDefaultAsync(x=>x.IdExcesoPuntoOptimo==id);
             return item == null ? null : _mapper.Map<ExcesoPuntoOptimoDTO>(item);
         }
 

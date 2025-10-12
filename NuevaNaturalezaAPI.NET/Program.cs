@@ -44,6 +44,7 @@ builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.AddScoped<IExcesoPOService, ExcesoPOService>();
 builder.Services.AddScoped<ITipoExcesoService, TipoExcesoService>();
 builder.Services.AddScoped<ISugerenciaService, SugerenciaService>();
+builder.Services.AddScoped<IChecklistService, ChecklistService>();
 
 
 string allowAll = "allowAll";
