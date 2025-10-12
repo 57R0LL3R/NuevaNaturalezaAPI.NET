@@ -67,6 +67,9 @@ public partial class NuevaNatuContext : DbContext
 
     public virtual DbSet<ChecklistDetalle> ChecklistDetalles { get; set; }
 
+    public virtual DbSet<ProgramacionDosificador> ProgramacionDosificadores { get; set; }
+
+    public virtual DbSet<Dosificador> Dosificadores { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -102,6 +105,31 @@ public partial class NuevaNatuContext : DbContext
             entity.HasMany(e => e.Detalles)
                   .WithOne(d => d.Checklist)
                   .HasForeignKey(d => d.IdChecklist);
+        });
+
+        modelBuilder.Entity<Dosificador>(entity =>
+        {
+            entity.HasKey(e => e.IdDosificador);
+            entity.Property(e => e.IdDosificador).HasDefaultValueSql("NEWID()");
+            entity.Property(e => e.LetraActivacion).HasMaxLength(10);
+            entity.Property(e => e.Descripcion).HasMaxLength(200);
+
+            entity.HasOne(d => d.IdDispositivoNavigation)
+                  .WithMany(p => p.Dosificadores) // nombre exacto de la colección en Dispositivo
+                  .HasForeignKey(d => d.IdDispositivo)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ProgramacionDosificador -> Dosificador (N:1)
+        modelBuilder.Entity<ProgramacionDosificador>(entity =>
+        {
+            entity.HasKey(e => e.IdProgramacion);
+            entity.Property(e => e.IdProgramacion).HasDefaultValueSql("NEWID()");
+
+            entity.HasOne(p => p.Dosificador)
+                  .WithMany(d => d.Programaciones)
+                  .HasForeignKey(p => p.IdDosificador)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<ChecklistDetalle>(entity =>

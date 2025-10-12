@@ -14,7 +14,6 @@ builder.Services.AddSignalR();
 builder.Services.AddDbContext<NuevaNatuContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
-
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccionActService, AccionActService>();
 builder.Services.AddScoped<IActuadorService, ActuadorService>();
@@ -45,6 +44,10 @@ builder.Services.AddScoped<IExcesoPOService, ExcesoPOService>();
 builder.Services.AddScoped<ITipoExcesoService, TipoExcesoService>();
 builder.Services.AddScoped<ISugerenciaService, SugerenciaService>();
 builder.Services.AddScoped<IChecklistService, ChecklistService>();
+
+builder.Services.AddScoped<IProgramacionDosificadorService, ProgramacionDosificadorService>();
+builder.Services.AddScoped<IDosificadorService, DosificadorService>();
+
 
 
 string allowAll = "allowAll";
