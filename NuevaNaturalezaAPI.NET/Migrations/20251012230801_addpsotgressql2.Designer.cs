@@ -12,8 +12,8 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 namespace NuevaNaturalezaAPI.NET.Migrations
 {
     [DbContext(typeof(NuevaNatuContext))]
-    [Migration("20251011214127_AddDosificadorAndProgramacion")]
-    partial class AddDosificadorAndProgramacion
+    [Migration("20251012230801_addpsotgressql2")]
+    partial class addpsotgressql2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -218,8 +218,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                 {
                     b.Property<Guid>("IdDosificador")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(200)

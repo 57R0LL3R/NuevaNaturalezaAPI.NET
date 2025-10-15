@@ -31,7 +31,13 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         {
             var entity = _mapper.Map<Dosificador>(dto);
             _context.Dosificadores.Add(entity);
+            try { 
             await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             return _mapper.Map<DosificadorDTO>(entity);
         }
 

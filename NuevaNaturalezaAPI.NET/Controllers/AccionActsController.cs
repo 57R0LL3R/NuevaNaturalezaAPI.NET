@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     [Route("api/[controller]")]
     [ApiController]
     public class AccionActsController(IAccionActService service) : ControllerBase

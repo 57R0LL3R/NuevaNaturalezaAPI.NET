@@ -3,11 +3,17 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Services.Implementations;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
 using NuevaNaturalezaAPI.NET.Utilities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using System.Net;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "ClaveSuperSecreta12345"; // puedes ponerlo en appsettings.json
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "https://localhost:44330";
 
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
@@ -44,11 +50,37 @@ builder.Services.AddScoped<IExcesoPOService, ExcesoPOService>();
 builder.Services.AddScoped<ITipoExcesoService, TipoExcesoService>();
 builder.Services.AddScoped<ISugerenciaService, SugerenciaService>();
 builder.Services.AddScoped<IChecklistService, ChecklistService>();
-
 builder.Services.AddScoped<IProgramacionDosificadorService, ProgramacionDosificadorService>();
 builder.Services.AddScoped<IDosificadorService, DosificadorService>();
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+    };
 
+    // Permitir JWT en cookie
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            if (context.Request.Cookies.ContainsKey("jwt"))
+                context.Token = context.Request.Cookies["jwt"];
+            return Task.CompletedTask;
+        }
+    };
+});
 
 string allowAll = "allowAll";
 builder.Services.AddCors(options =>
@@ -73,11 +105,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapHub<NotificacionesHub>("/hubs/notificaciones");
 app.UseHttpsRedirection();
-
+app.UseCors(allowAll);
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
+app.MapHub<NotificacionesHub>("/hubs/notificaciones");
 app.Run();

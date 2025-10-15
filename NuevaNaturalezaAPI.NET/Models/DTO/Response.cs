@@ -1,6 +1,7 @@
 ﻿enum NumberResponses
 {
-    Correct, Warning, Error
+    Correct, Warning, Error,
+    Incorrect
 }
 
 namespace NuevaNaturalezaAPI.NET.Models.DTO

@@ -4,9 +4,12 @@ using NuevaNaturalezaAPI.NET.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Acuaponic.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProgramacionDosificacionController : ControllerBase
@@ -38,7 +41,7 @@ namespace Acuaponic.Controllers
         {
             var created = await _service.CreateAsync(dto);
             if (created == null) return BadRequest();
-            return CreatedAtAction(nameof(GetAll), new { id = created.IdDosificador }, created);
+            return CreatedAtAction(nameof(GetAll), new { id = created!.IdProgramacion }, created);
         }
 
         // PUT: api/ProgramacionDosificacion/5

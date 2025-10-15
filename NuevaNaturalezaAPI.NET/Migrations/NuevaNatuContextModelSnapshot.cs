@@ -190,7 +190,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("SegundoNombre")
-
                         .HasColumnType("text");
 
                     b.Property<string>("Sn")
@@ -216,8 +215,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                 {
                     b.Property<Guid>("IdDosificador")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(200)
@@ -1052,9 +1050,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
 
                     b.Navigation("ExcesoPuntoOptimo");
 
-
                     b.Navigation("ProgramacionDosificadores");
-
 
                     b.Navigation("Sensors");
                 });

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
@@ -21,7 +23,7 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         {
             return Ok(await _authService.Register(usuario));
         }
-
+        [AllowAnonymous]
         [HttpPost("Recover")]
         public async Task<ActionResult> Recover(LoginModel usuario)
         {

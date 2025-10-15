@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     [Route("api/[controller]")]
     [ApiController]
     public class ESPController(IESPService service) : ControllerBase

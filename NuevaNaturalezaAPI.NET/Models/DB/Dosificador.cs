@@ -10,7 +10,7 @@ namespace NuevaNaturalezaAPI.NET.Models.DB
         public string? LetraActivacion { get; set; }
         public string? Descripcion { get; set; }
 
-        public virtual Dispositivo IdDispositivoNavigation { get; set; } = new Dispositivo();
+        public virtual Dispositivo? IdDispositivoNavigation { get; set; } 
         public virtual ICollection<ProgramacionDosificador> Programaciones { get; set; } = new List<ProgramacionDosificador>();
     }
 }
