@@ -4,6 +4,8 @@ using NuevaNaturalezaAPI.NET.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {

@@ -8,9 +8,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
+    [Authorize(Roles = "Administrador,Operario")]
     [Route("api/[controller]")]
     [ApiController]
     public class SugerenciasController : ControllerBase

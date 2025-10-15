@@ -3,10 +3,12 @@ using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     [Route("api/[controller]")]
     [ApiController]
     public class AuditoriumsController : ControllerBase

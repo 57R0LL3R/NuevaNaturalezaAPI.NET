@@ -110,7 +110,7 @@ public partial class NuevaNatuContext : DbContext
         modelBuilder.Entity<Dosificador>(entity =>
         {
             entity.HasKey(e => e.IdDosificador);
-            entity.Property(e => e.IdDosificador).HasDefaultValueSql("NEWID()");
+            //entity.Property(e => e.IdDosificador).HasDefaultValueSql("NEWID()");
             entity.Property(e => e.LetraActivacion).HasMaxLength(10);
             entity.Property(e => e.Descripcion).HasMaxLength(200);
 

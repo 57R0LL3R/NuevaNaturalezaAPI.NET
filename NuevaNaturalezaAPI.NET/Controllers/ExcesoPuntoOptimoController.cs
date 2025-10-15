@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Implementations;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
+    [Authorize(Roles = "Administrador,Operario")]
     [Route("api/[controller]")]
     [ApiController]
     public class ExcesoPuntoOptimoController(IExcesoPOService service) : ControllerBase
