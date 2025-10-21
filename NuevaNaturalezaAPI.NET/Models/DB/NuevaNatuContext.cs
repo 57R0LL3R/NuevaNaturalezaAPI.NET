@@ -99,7 +99,7 @@ public partial class NuevaNatuContext : DbContext
 
             entity.Property(e => e.IdChecklist).ValueGeneratedNever();
             entity.Property(e => e.Usuario).HasMaxLength(100);
-            entity.Property(e => e.ObservacionesGenerales).HasMaxLength(500);
+            entity.Property(e => e.ObservacionGeneral).HasMaxLength(500);
 
             // Relación con detalles
             entity.HasMany(e => e.Detalles)

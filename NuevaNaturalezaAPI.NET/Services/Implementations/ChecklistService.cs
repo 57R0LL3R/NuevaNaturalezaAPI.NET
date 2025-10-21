@@ -39,8 +39,20 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         public async Task<ChecklistDTO?> CreateAsync(ChecklistDTO dto)
         {
             var entity = _mapper.Map<Checklist>(dto);
+
+            // Forzar nuevos GUIDs para los detalles y el checklist
+            entity.IdChecklist = Guid.NewGuid();
+            foreach (var det in entity.Detalles)
+            {
+                det.IdDetalle = Guid.NewGuid();  // evita conflicto con IDs duplicados
+                det.IdChecklist = entity.IdChecklist;
+                det.Checklist = null; // rompe referencia circular
+                _context.Entry(det).State = EntityState.Added;
+            }
+
             _context.Checklists.Add(entity);
             await _context.SaveChangesAsync();
+
             return _mapper.Map<ChecklistDTO>(entity);
         }
 
