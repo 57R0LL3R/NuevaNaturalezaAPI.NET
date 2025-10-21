@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
-    [Authorize(Roles = "Administrador,Operario")]
+    //[Authorize(Roles = "Administrador,Operario")]
     [Route("api/[controller]")]
     [ApiController]
     public class ChecklistController : ControllerBase

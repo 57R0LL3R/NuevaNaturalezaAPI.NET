@@ -16,7 +16,7 @@
         public string NombreDispositivo { get; set; } = string.Empty;
 
         public string? ValorIngresado { get; set; }  // lo que escribió el usuario para sensores
-        public string? EstadoActuador { get; set; } // "ON" / "OFF" si aplica
+        public bool? EstadoActuador { get; set; } // "ON" / "OFF" si aplica
     }
 }
 

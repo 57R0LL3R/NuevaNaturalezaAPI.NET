@@ -67,7 +67,33 @@ namespace NuevaNaturalezaAPI.NET.Utilities
 
             CreateMap<SugerenciaDTO, Sugerencia>().ReverseMap();
 
-            CreateMap<ChecklistDTO, Checklist>().ReverseMap();
+            // Mapea los detalles
+            CreateMap<ChecklistDetalleDTO, ChecklistDetalle>()
+                .ForMember(dest => dest.IdDetalle, opt => opt.MapFrom(src => src.IdChecklistDetalle))
+                .ForMember(dest => dest.IdDispositivo, opt => opt.MapFrom(src => src.IdDispositivo))
+                .ForMember(dest => dest.ValorRegistrado, opt => opt.MapFrom(src =>
+                    !string.IsNullOrEmpty(src.ValorIngresado)
+                        ? src.ValorIngresado
+                        : (src.EstadoActuador.HasValue
+                            ? (src.EstadoActuador.Value ? "Encendido" : "Apagado")
+                            : "N/A")))
+                .ForMember(dest => dest.Tipo, opt => opt.Ignore())
+                .ForMember(dest => dest.Checklist, opt => opt.Ignore())
+                .ForMember(dest => dest.IdDispositivoNavigation, opt => opt.Ignore());
+
+            CreateMap<ChecklistDetalle, ChecklistDetalleDTO>()
+                .ForMember(dest => dest.IdChecklistDetalle, opt => opt.MapFrom(src => src.IdDetalle))
+                .ForMember(dest => dest.IdDispositivo, opt => opt.MapFrom(src => src.IdDispositivo))
+                .ForMember(dest => dest.NombreDispositivo, opt => opt.MapFrom(src => src.IdDispositivoNavigation != null ? src.IdDispositivoNavigation.Nombre : "N/A"))
+                .ForMember(dest => dest.ValorIngresado, opt => opt.MapFrom(src => src.ValorRegistrado))
+                .ForMember(dest => dest.EstadoActuador, opt => opt.Ignore());
+
+            // Mapea el checklist principal y su lista de detalles
+            CreateMap<ChecklistDTO, Checklist>()
+                .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.Detalles))
+                .ReverseMap();
+
+
 
             CreateMap<ProgramacionDosificador, ProgramacionDosificadorDTO>()
                 .ForMember(dest => dest.NombreDosificador, opt => opt.MapFrom(src => src.Dosificador != null ? src.Dosificador.IdDispositivoNavigation.Nombre : src.Dosificador.LetraActivacion))
