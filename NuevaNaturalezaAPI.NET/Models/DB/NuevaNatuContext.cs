@@ -17,6 +17,7 @@ public partial class NuevaNatuContext : DbContext
 
     public virtual DbSet<RecuperarContrasena> RecuperarContrasena { get; set; }
     public virtual DbSet<Actuador> Actuador { get; set; }
+    public virtual DbSet<Area> Area { get; set; }
     public virtual DbSet<AccionAct> AccionAct { get; set; }
     public virtual DbSet<TipoExceso> TipoExceso { get; set; }
     public virtual DbSet<ExcesoPuntoOptimo> ExcesoPuntoOptimo { get; set; }
@@ -73,6 +74,17 @@ public partial class NuevaNatuContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+
+
+        modelBuilder.Entity<Area>(entity =>
+        {
+            entity.HasKey(e => e.IdArea);
+
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(200);
+
+        });
         modelBuilder.Entity<TipoExceso>(entity =>
         {
             entity.HasKey(e => e.IdTipoExceso);
@@ -99,7 +111,7 @@ public partial class NuevaNatuContext : DbContext
 
             entity.Property(e => e.IdChecklist).ValueGeneratedNever();
             entity.Property(e => e.Usuario).HasMaxLength(100);
-            entity.Property(e => e.ObservacionesGenerales).HasMaxLength(500);
+            entity.Property(e => e.ObservacionGeneral).HasMaxLength(500);
 
             // Relación con detalles
             entity.HasMany(e => e.Detalles)
@@ -160,7 +172,6 @@ public partial class NuevaNatuContext : DbContext
             entity.Property(e => e.Accion)
                 .HasMaxLength(200);
         });
-
         modelBuilder.Entity<RecuperarContrasena>(entity =>
         {
             entity.HasKey(e => e.IdRecuperarContrasena);
@@ -191,7 +202,7 @@ public partial class NuevaNatuContext : DbContext
 
             entity.Property( e => e.Estado).IsRequired(false);
 
-            entity.Property(e => e.Fecha).HasColumnType("timestamp");
+            entity.Property(e => e.Fecha).HasColumnType("timestamp with time zone");
             entity.Property(e => e.Observacion)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -234,6 +245,11 @@ public partial class NuevaNatuContext : DbContext
 
             entity.HasOne(d => d.IdEstadoDispositivoNavigation)
             .WithMany(d => d.Dispositivos).HasForeignKey(d => d.IdEstadoDispositivo);
+
+
+            entity.HasOne(d => d.IdAreaNavigation)
+                  .WithMany(p => p.Dispositivos) 
+                  .HasForeignKey(d => d.IdDispositivo);
         });
 
         modelBuilder.Entity<EstadoDispositivo>(entity =>
@@ -253,7 +269,7 @@ public partial class NuevaNatuContext : DbContext
             entity.ToTable("Evento");
 
             entity.Property(e => e.IdEvento).ValueGeneratedNever();
-            entity.Property(e => e.FechaEvento).HasColumnType("timestamp");
+            entity.Property(e => e.FechaEvento).HasColumnType("timestamp with time zone");
 
             entity.HasOne(d => d.IdDispositivoNavigation).WithMany(p => p.Eventos)
                 .HasForeignKey(d => d.IdDispositivo)
@@ -269,13 +285,17 @@ public partial class NuevaNatuContext : DbContext
                 .HasForeignKey(d => d.IdSistema)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Evento__IdSistem__6FE99F9F");
+
+            entity.HasOne(d => d.IdAccionActNavigation).WithMany(p => p.Eventos)
+                .HasForeignKey(d => d.IdAccionAct)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<FechaMedicion>(entity =>
         {
 
             entity.Property(e => e.Fecha)
-                  .HasColumnType("timestamp without time zone")
+                  .HasColumnType("timestamp with time zone")
                   .HasDefaultValueSql("now()");
             entity.HasKey(e => e.IdFechaMedicion).HasName("PK__FechaMed__8194661818A24598");
 

@@ -10,6 +10,9 @@ namespace NuevaNaturalezaAPI.NET.Utilities
     {
         public MappingProfile()
         {
+
+            CreateMap<Area, AreaDTO>().ReverseMap();
+
             CreateMap<UsuarioDTO, Usuario>();
             CreateMap<Usuario, UsuarioDTO>().ForMember(dest=>dest.Clave,opt=>opt.Ignore());
 
@@ -23,7 +26,10 @@ namespace NuevaNaturalezaAPI.NET.Utilities
             CreateMap<AccionActDTO, AccionAct>().ReverseMap();
 
 
-            CreateMap<DispositivoDTO, Dispositivo>().ReverseMap();
+            CreateMap<DispositivoDTO, Dispositivo>();
+            CreateMap< Dispositivo,DispositivoDTO>().
+                ForMember(dest => dest.Estado, opt => opt.MapFrom(x => x.IdEstadoDispositivoNavigation.Nombre ?? "N/A"))
+                .ForMember(dest => dest.Sistema, opt => opt.MapFrom(x => x.IdSistemaNavigation.Nombre ?? "N/A"));
             CreateMap<TipoExcesoDTO, TipoExceso>().ReverseMap();
 
             CreateMap<ExcesoPuntoOptimoDTO, ExcesoPuntoOptimo>().ReverseMap();

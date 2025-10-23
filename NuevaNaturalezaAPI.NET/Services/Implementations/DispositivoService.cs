@@ -26,7 +26,10 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             var dispositivos = await _context.Dispositivos
                 .Include(d => d.IdTipoDispositivoNavigation)
                 .Include(d => d.IdMarcaNavigation)
+                .Include(d => d.IdSistemaNavigation)
+                .Include(d => d.IdEstadoDispositivoNavigation)
                 .Include(d => d.Actuadores)
+                    .ThenInclude(a => a.IdAccionActNavigation)
                 .Include(d => d.Sensors)
                     .ThenInclude(s => s.PuntoOptimos)
                 .Include(d => d.Sensors)
@@ -43,8 +46,9 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             {
                 foreach (var sensor in dispositivo.Sensors)
                 {
-                    sensor.Medicions = sensor.Medicions
-                        .OrderByDescending(m => m.IdFechaMedicionNavigation.Fecha).Take(20).ToList();
+                    var now = DateTime.UtcNow;
+                    sensor.Medicions = sensor.Medicions.Where(m => m.IdFechaMedicionNavigation.Fecha < now).ToList();
+                    sensor.Medicions = sensor.Medicions.OrderByDescending(m => m.IdFechaMedicionNavigation.Fecha).Take(20).ToList(); 
                     sensor.Medicions = sensor.Medicions
                         .OrderBy(m => m.IdFechaMedicionNavigation.Fecha).ToList();
                         
@@ -63,6 +67,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 .Include(x => x.IdTipoDispositivoNavigation)
                 .Include(x => x.IdMarcaNavigation)
                 .Include(x => x.Actuadores)
+                    .ThenInclude(a => a.IdAccionActNavigation)
                 .Include(d => d.Sensors)
                     .ThenInclude(s => s.PuntoOptimos)
                 .Include(d => d.Sensors)

@@ -67,7 +67,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 var act = actuadores.Find(x => x.IdDispositivo == auditorias[i].IdDispositivo);
                 if(act != null)
                 {
-                    outputs += auditorias[i].IdAccion.Value.Equals(typeAccions.FirstOrDefault(x=>x.Accion.Equals("On")).IdAccionAct) ? act.On : act.Off;
+                    outputs += auditorias[i].IdAccion.Value.Equals(typeAccions.FirstOrDefault(x=>x.Accion.Equals("Activo")).IdAccionAct) ? act.On : act.Off;
                     outputs += ",";
                 }
             }
@@ -94,7 +94,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 fm = new();
                 if (mediciones.Fecha != null)
                 {
-                    fm.Fecha = (DateTime)mediciones.Fecha;
+                    fm.Fecha = ((DateTime)mediciones.Fecha).ToUniversalTime();
                 }
                 _context.FechaMedicions.Add(fm);
                 await _context.SaveChangesAsync();
