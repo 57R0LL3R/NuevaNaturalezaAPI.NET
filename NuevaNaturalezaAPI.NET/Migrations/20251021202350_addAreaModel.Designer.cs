@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NuevaNaturalezaAPI.NET.Models.DB;
@@ -11,9 +12,11 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 namespace NuevaNaturalezaAPI.NET.Migrations
 {
     [DbContext(typeof(NuevaNatuContext))]
-    partial class NuevaNatuContextModelSnapshot : ModelSnapshot
+    [Migration("20251021202350_addAreaModel")]
+    partial class addAreaModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,7 +96,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp");
 
                     b.Property<Guid?>("IdAccion")
                         .HasColumnType("uuid");
@@ -132,7 +135,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ObservacionGeneral")
+                    b.Property<string>("ObservacionesGenerales")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
@@ -234,7 +237,8 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                 {
                     b.Property<Guid>("IdDosificador")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Descripcion")
                         .HasMaxLength(200)
@@ -276,10 +280,7 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("FechaEvento")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("IdAccionAct")
-                        .HasColumnType("uuid");
+                        .HasColumnType("timestamp");
 
                     b.Property<Guid>("IdDispositivo")
                         .HasColumnType("uuid");
@@ -292,8 +293,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
 
                     b.HasKey("IdEvento")
                         .HasName("PK__Evento__034EFC0405B295B9");
-
-                    b.HasIndex("IdAccionAct");
 
                     b.HasIndex("IdDispositivo");
 
@@ -872,10 +871,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
 
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Evento", b =>
                 {
-                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.AccionAct", "IdAccionActNavigation")
-                        .WithMany("Eventos")
-                        .HasForeignKey("IdAccionAct");
-
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Dispositivo", "IdDispositivoNavigation")
                         .WithMany("Eventos")
                         .HasForeignKey("IdDispositivo")
@@ -893,8 +888,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                         .HasForeignKey("IdSistema")
                         .IsRequired()
                         .HasConstraintName("FK__Evento__IdSistem__6FE99F9F");
-
-                    b.Navigation("IdAccionActNavigation");
 
                     b.Navigation("IdDispositivoNavigation");
 
@@ -1060,8 +1053,6 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Navigation("Actuadores");
 
                     b.Navigation("Auditoria");
-
-                    b.Navigation("Eventos");
 
                     b.Navigation("ExcesoPuntoOptimo");
                 });

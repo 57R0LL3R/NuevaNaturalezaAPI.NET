@@ -23,13 +23,13 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<IEnumerable<UsuarioDTO>> GetAllAsync()
         {
-            var usuarios = await _context.Usuarios.ToListAsync();
+            var usuarios = await _context.Usuarios.Include(x=>x.IdRolNavigation).ToListAsync();
             return _mapper.Map<List<UsuarioDTO>>(usuarios);
         }
 
         public async Task<UsuarioDTO?> GetByIdAsync(Guid id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
+            Usuario? usuario = await _context.Usuarios.Include(x => x.IdRolNavigation).FirstOrDefaultAsync(x=>x.IdUsuario==id);
             return usuario == null ? null : _mapper.Map<UsuarioDTO>(usuario);
         }
 

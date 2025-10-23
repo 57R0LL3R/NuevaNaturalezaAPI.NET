@@ -20,6 +20,7 @@ builder.Services.AddSignalR();
 builder.Services.AddDbContext<NuevaNatuContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+builder.Services.AddScoped<IAreaService, AreaService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccionActService, AccionActService>();
 builder.Services.AddScoped<IActuadorService, ActuadorService>();

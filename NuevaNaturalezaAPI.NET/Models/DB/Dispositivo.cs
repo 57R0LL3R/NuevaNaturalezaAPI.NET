@@ -24,7 +24,10 @@ public class Dispositivo
 
     public Guid? IdEstadoDispositivo { get; set; }
 
+    public Guid? IdArea { get; set; }
+
     public virtual EstadoDispositivo IdEstadoDispositivoNavigation { get; set; } = null!;
+    public virtual Area? IdAreaNavigation { get; set; } = null!;
 
     public virtual ICollection<Actuador> Actuadores { get; set; } = new List<Actuador>();
 

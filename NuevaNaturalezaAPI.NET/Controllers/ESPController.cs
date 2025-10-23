@@ -15,7 +15,7 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         private readonly IESPService _service = service;
 
         [HttpPost("Medidas")]
-        public async Task<IActionResult> Data(MedicionesESP[] medicion)
+        public async Task<IActionResult> Data(List<MedicionesESP> medicion)
         {
             Response resf = new();
             foreach (var med in medicion)

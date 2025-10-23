@@ -15,6 +15,8 @@ public class DispositivoDTO
     public string? Descripcion { get; set; }
 
     public string? Image { get; set; }
+    public string? Sistema { get; set; }
+    public string? Estado { get; set; }
 
     public Guid? IdTipoDispositivo { get; set; }
 
@@ -23,6 +25,10 @@ public class DispositivoDTO
     public Guid? IdMarca { get; set; }
 
     public Guid? IdEstadoDispositivo { get; set; }
+
+    public Guid? IdArea { get; set; }
+
+    public virtual Area IdAreaNavigation { get; set; } = null!;
 
     public virtual TipoDispositivoDTO? IdTipoDispositivoNavigation { get; set; }
 

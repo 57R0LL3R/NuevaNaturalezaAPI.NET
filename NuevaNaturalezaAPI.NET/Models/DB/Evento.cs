@@ -12,10 +12,12 @@ public class Evento
     public Guid IdImpacto { get; set; }
 
     public Guid IdSistema { get; set; }
+    public Guid? IdAccionAct { get; set; }
 
-    public DateTime FechaEvento { get; set; } =
-    TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
-    TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time"));
+    public DateTime FechaEvento { get; set; } = DateTime.UtcNow;
+
+    public virtual AccionAct? IdAccionActNavigation { get; set; } = null!;
+
 
     public virtual Dispositivo IdDispositivoNavigation { get; set; } = null!;
 

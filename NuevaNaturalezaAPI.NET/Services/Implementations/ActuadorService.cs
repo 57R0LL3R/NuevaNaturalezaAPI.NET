@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
@@ -36,16 +37,10 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             if (id != dto.IdActuador) return false;
             Actuador? actuador = await _context.Actuador.FirstOrDefaultAsync(x=>x.IdActuador==id);
             if (actuador == null) return false;
-            if (dto.IdAccionAct != actuador.IdAccionAct)
-            {
-                var audi = _context.Auditoria.FirstAsync(x => x.IdDispositivo == dto.IdDispositivo);
-                if (audi == null) await _context.Auditoria.AddAsync(new Auditorium(){Estado = (int)NumberStatus.InProcces, IdAccion= dto.IdAccionAct ,
-                    IdDispositivo=dto.IdDispositivo,IdUsuario= Guid.Parse("5d78da22-8c43-40f5-aa96-bfe9d531fde8") });
-                dto.IdAccionAct = actuador.IdAccionAct;
-            }
-            var entity = _mapper.Map<Actuador>(dto);
+            actuador.Off = dto.Off==string.Empty? actuador.Off : dto.Off;
+            actuador.On = dto.On == string.Empty ? actuador.On : dto.On;
 
-            _context.Entry(entity).State = EntityState.Modified;
+            _context.Entry(actuador).State = EntityState.Modified;
 
             try
             {
@@ -56,6 +51,38 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             {
                 return false;
             }
+        }
+        public async Task<ActuadorDTO?> ONOFFActuador(Guid id, ActuadorDTO dto, Guid? idSistema,string observacion)
+        {
+
+            Actuador? actuador = await _context.Actuador.FirstOrDefaultAsync(x => x.IdActuador == id);
+            if (id != dto.IdActuador || actuador is null) return null;
+            if (dto.IdAccionAct != actuador.IdAccionAct)
+            {
+                var audi = await _context.Auditoria.FirstOrDefaultAsync(x => x.IdDispositivo == dto.IdDispositivo && x.Estado != (int)NumberStatus.InProcces);
+                if (audi == null)
+                {
+                    await _context.Auditoria.AddAsync(new Auditorium()
+                    {
+                        Estado = (int)NumberStatus.InProcces,
+                        IdAccion = dto.IdAccionAct,
+                        IdDispositivo = dto.IdDispositivo,
+                        Observacion = observacion,
+                        IdUsuario = Guid.Parse("5d78da22-8c43-40f5-aa96-bfe9d531fde8")
+                    });
+                    await _context.SaveChangesAsync();
+                    await _context.Eventos.AddAsync(new Evento()
+                    {
+                        IdImpacto = Guid.Parse("ec5e89b7-d35f-4925-900e-6dafe45e5470"),
+                        IdAccionAct = dto.IdAccionAct ?? Guid.Empty,
+                        IdDispositivo = dto.IdDispositivo,
+                        IdSistema = idSistema ?? Guid.Parse("1f1b289a-5fc7-426a-937c-1475c168d2f4")
+                    });
+                    await _context.SaveChangesAsync();
+                }
+
+            }
+            return dto;
         }
 
         public async Task<bool> DeleteAsync(Guid id)

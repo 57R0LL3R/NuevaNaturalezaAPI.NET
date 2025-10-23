@@ -25,6 +25,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             var lista = await _context.Eventos
                 .Include(x => x.IdDispositivoNavigation)
                 .Include(x => x.IdSistemaNavigation)
+                .Include(x => x.IdAccionActNavigation)
                 .Include(x => x.IdImpactoNavigation)
                 .ToListAsync();
             return _mapper.Map<List<EventoDTO>>(lista);
@@ -35,6 +36,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             var item = await _context.Eventos
                 .Include(x => x.IdDispositivoNavigation)
                 .Include(x => x.IdSistemaNavigation)
+                .Include(x => x.IdAccionActNavigation)
                 .Include(x => x.IdImpactoNavigation)
                 .FirstOrDefaultAsync(x=>x.IdEvento==id);
             return item == null ? null : _mapper.Map<EventoDTO>(item);

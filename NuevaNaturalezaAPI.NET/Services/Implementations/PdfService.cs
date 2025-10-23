@@ -34,7 +34,12 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                         .ThenInclude(t => t.IdUnidadMedidaNavigation)
                 .ToListAsync();
 
-            pdfSens.Hasta = pdfSens.Hasta.AddDays(1);
+            var Desde1 = pdfSens.Desde.ToUniversalTime();
+
+            var Hasta2 = pdfSens.Hasta.AddDays(1).ToUniversalTime();
+
+            pdfSens.Hasta = pdfSens.Hasta.AddDays(1).ToUniversalTime();
+            pdfSens.Desde = pdfSens.Desde.Date.ToUniversalTime();
             var list1 =  _mapper.Map<List<DispositivoDTO>>(dispositivos);
             foreach (var dispositivo in list1)
             {
@@ -43,7 +48,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                     if(sensor.Medicions !=null)
                     sensor.Medicions = [.. sensor.Medicions
                         .OrderBy(m => m.Fecha)
-                        .Where(x => x.Fecha > pdfSens.Desde.Date && x.Fecha < pdfSens.Hasta.Date)];
+                        .Where(x => x.Fecha > Desde1 && x.Fecha < Hasta2)];
                 }
             }
 
@@ -60,7 +65,11 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         {
             var Auditorias = await _aService.GetAllAsync();
             pdfAudi.Hasta = pdfAudi.Hasta.AddDays(1);
-            Auditorias = [.. Auditorias.OrderBy(m => m.Fecha).Where(x => x.Fecha > pdfAudi.Desde.Date && x.Fecha < pdfAudi.Hasta.Date)];
+
+            var Desde1 = pdfAudi.Desde.ToUniversalTime();
+
+            var Hasta2 = pdfAudi.Hasta.AddDays(1).ToUniversalTime();
+            Auditorias = [.. Auditorias.OrderBy(m => m.Fecha).Where(x => x.Fecha > Desde1 && x.Fecha < Hasta2)];
                 
             
 
@@ -76,8 +85,12 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         {
             var Eventos = await _eService.GetAllAsync();
             pdfEven.Hasta = pdfEven.Hasta.AddDays(1);
+
+            var Desde1 = pdfEven.Desde.ToUniversalTime();
+
+            var Hasta2 = pdfEven.Hasta.AddDays(1).ToUniversalTime();
             Eventos = [.. Eventos.OrderBy(m => m.FechaEvento)
-                .Where(x => x.FechaEvento > pdfEven.Desde.Date && x.FechaEvento < pdfEven.Hasta.Date)];
+                .Where(x => x.FechaEvento > Desde1 && x.FechaEvento < Hasta2)];
 
 
 

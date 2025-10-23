@@ -38,7 +38,15 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         public async Task<IActionResult> Put(Guid id, ActuadorDTO dto)
         {
             var updated = await _service.UpdateAsync(id, dto);
-            return updated ? NoContent() : BadRequest();
+            return updated ? Ok() : BadRequest();
+        }
+
+
+       [HttpPost("ONOFF")]
+        public async Task<ActionResult<ActuadorDTO>> ONOFFActuador( ActuadorState actsta)
+        {
+            var created = await _service.ONOFFActuador(actsta.id, actsta.dto, actsta.idSistema, actsta.observacion);
+            return CreatedAtAction(nameof(Get), new { id = created!.IdActuador }, created);
         }
 
         [HttpDelete("{id}")]
