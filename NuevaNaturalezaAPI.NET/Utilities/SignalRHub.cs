@@ -3,11 +3,11 @@
 namespace NuevaNaturalezaAPI.NET.Utilities
 {
 
-    public class NotificacionesHub : Hub
+    public class SignalRHub : Hub
     {
         public async Task EnviarNotificacion(string mensaje)
         {
-            await Clients.All.SendAsync("RecibirNotificacion", mensaje);
+            await Clients.All.SendAsync("ReceiveUpdate", mensaje);
         }
     }
 }

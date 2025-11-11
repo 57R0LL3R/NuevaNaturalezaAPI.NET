@@ -78,11 +78,8 @@ namespace NuevaNaturalezaAPI.NET.Utilities
                 .ForMember(dest => dest.IdDetalle, opt => opt.MapFrom(src => src.IdChecklistDetalle))
                 .ForMember(dest => dest.IdDispositivo, opt => opt.MapFrom(src => src.IdDispositivo))
                 .ForMember(dest => dest.ValorRegistrado, opt => opt.MapFrom(src =>
-                    !string.IsNullOrEmpty(src.ValorIngresado)
-                        ? src.ValorIngresado
-                        : (src.EstadoActuador.HasValue
-                            ? (src.EstadoActuador.Value ? "Encendido" : "Apagado")
-                            : "N/A")))
+                (src.EstadoActuador == null ? src.ValorRegistrado.Length > 0 ? src.ValorRegistrado : "N/A" : src.EstadoActuador.Value ? "Encendido": "Apagado")
+                   ))
                 .ForMember(dest => dest.Tipo, opt => opt.Ignore())
                 .ForMember(dest => dest.Checklist, opt => opt.Ignore())
                 .ForMember(dest => dest.IdDispositivoNavigation, opt => opt.Ignore());
@@ -91,14 +88,15 @@ namespace NuevaNaturalezaAPI.NET.Utilities
                 .ForMember(dest => dest.IdChecklistDetalle, opt => opt.MapFrom(src => src.IdDetalle))
                 .ForMember(dest => dest.IdDispositivo, opt => opt.MapFrom(src => src.IdDispositivo))
                 .ForMember(dest => dest.NombreDispositivo, opt => opt.MapFrom(src => src.IdDispositivoNavigation != null ? src.IdDispositivoNavigation.Nombre : "N/A"))
-                .ForMember(dest => dest.ValorIngresado, opt => opt.MapFrom(src => src.ValorRegistrado))
+                .ForMember(dest => dest.ValorRegistrado, opt => opt.MapFrom(src => src.ValorRegistrado))
                 .ForMember(dest => dest.EstadoActuador, opt => opt.Ignore());
 
             // Mapea el checklist principal y su lista de detalles
             CreateMap<ChecklistDTO, Checklist>()
-                .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.Detalles))
-                .ReverseMap();
+                .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.Detalles));
 
+            CreateMap< Checklist, ChecklistDTO>()
+                .ForMember(dest => dest.Usuario, opt => opt.MapFrom(src => src.IdUsuarioNavigation.Nombre));
 
 
             CreateMap<ProgramacionDosificador, ProgramacionDosificadorDTO>()

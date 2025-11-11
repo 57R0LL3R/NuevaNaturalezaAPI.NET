@@ -41,12 +41,12 @@ namespace NuevaNaturalezaAPI.NET.Controllers
             return updated ? Ok() : BadRequest();
         }
 
-
+        [Authorize(Roles = "Administrador")]
        [HttpPost("ONOFF")]
-        public async Task<ActionResult<ActuadorDTO>> ONOFFActuador( ActuadorState actsta)
+        public async Task<ActionResult> ONOFFActuador( ActuadorState actsta)
         {
             var created = await _service.ONOFFActuador(actsta.id, actsta.dto, actsta.idSistema, actsta.observacion);
-            return CreatedAtAction(nameof(Get), new { id = created!.IdActuador }, created);
+            return Ok(created);
         }
 
         [HttpDelete("{id}")]

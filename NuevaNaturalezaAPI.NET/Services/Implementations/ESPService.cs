@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using NuevaNaturalezaAPI.NET.Utilities;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -10,17 +12,21 @@ using System.Runtime.ConstrainedExecution;
 
 namespace NuevaNaturalezaAPI.NET.Services.Implementations
 {
-    public class ESPService(NuevaNatuContext context, IMapper mapper,INotificacionService service) : IESPService
+    public class ESPService(NuevaNatuContext context, IMapper mapper,INotificacionService service, IHubContext<SignalRHub>  hubContext) : IESPService
     {
         private readonly NuevaNatuContext _context = context;
         private readonly IMapper _mapper = mapper;
         private readonly INotificacionService _service=service;
 
+        private readonly IHubContext<SignalRHub> _hubContext = hubContext;
+   
         public async Task<Response> Confirm(string estadosF)
         {
             var estados = estadosF.Split(",").ToList();
             var auditorias = await _context.Auditoria.Where(x => x.Estado == (int)NumberStatus.InProcces).OrderBy(x=>x.Fecha).ToListAsync();
+
             var actuadores = await _context.Actuador.Where(x => estados.Contains(x.On ?? string.Empty) || estados.Contains(x.Off ?? string.Empty)).ToListAsync();
+            Actuador? act1 = null;
             foreach (Actuador act in actuadores)
             {
                 foreach(string es in estados)
@@ -35,17 +41,25 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                             _context.Entry(act).State = EntityState.Modified;
                             _context.Entry(audi).State = EntityState.Modified;
                             await _context.SaveChangesAsync();
-
+                            act1 = act;
                         }
                     }
                 }
             }
+            if(act1!=null)
+            await _hubContext.Clients.All.SendAsync("ReceiveUpdate", new
+            {
+                tipo = "actuador",
+                payload =
+                    auditorias.Where(x => x.Estado != (int)NumberStatus.InProcces).ToList()
+
+            });
             try
             {
 
                 return new Response()
                 {
-                    Data = auditorias,
+                    Data = auditorias.Where(x => x.Estado != (int)NumberStatus.InProcces).ToList(),
                     NumberResponse = (int)NumberResponses.Correct
                 };
             }
@@ -67,7 +81,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 var act = actuadores.Find(x => x.IdDispositivo == auditorias[i].IdDispositivo);
                 if(act != null)
                 {
-                    outputs += auditorias[i].IdAccion.Value.Equals(typeAccions.FirstOrDefault(x=>x.Accion.Equals("Activo")).IdAccionAct) ? act.On : act.Off;
+                    outputs += auditorias[i].IdAccion.Value.Equals(typeAccions.FirstOrDefault(x=>x.IdAccionAct.CompareTo(Guid.Parse("80b8364b-8603-42d9-b857-0db5f055c6fd"))==0).IdAccionAct) ? act.On : act.Off;
                     outputs += ",";
                 }
             }
@@ -84,6 +98,8 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 var sensores = await _context.Sensors.ToListAsync();
                 var Puntosoptimos = await _context.PuntoOptimos
                     .Include(x => x.IdSensorNavigation.IdDispositivoNavigation)
+                    .Include(x => x.ExcesoPuntosOptimos)
+                    .ThenInclude(x=>x.IdTipoExcesoNavigation)
                     .ToListAsync();
 
                 // Cargamos actuadores y excesos una sola vez
@@ -161,24 +177,15 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                                 await _context.SaveChangesAsync();
 
                                 // 2) buscar ExcesoPuntoOptimo asociados al punto óptimo actual
-                                var excesos = excesosPuntoOptimoAll.Where(e => e.IdPuntoOptimo == po.IdPuntoOptimo).ToList();
+
+                                List<ExcesoPuntoOptimo>? excesos = null;
+                                if (m.Valor < po.ValorMin)
+                                    excesos = po.ExcesoPuntosOptimos.Where(x=>x.IdTipoExcesoNavigation.Nombre== "Inferior").ToList();
+                                else
+                                    excesos = po.ExcesoPuntosOptimos.Where(x => x.IdTipoExcesoNavigation.Nombre != "Inferior").ToList();
 
                                 // Si no hay excesos definidos, aún podemos opcionalmente crear una auditoría genérica
-                                if (!excesos.Any())
-                                {
-                                    // crear una auditoría genérica que indique exceso pero sin actuador
-                                    var auditoriaGenerica = new Auditorium()
-                                    {
-                                        IdDispositivo = dis.IdDispositivo,
-                                        IdAccion = null, // si no hay accion definida para este exceso
-                                        Fecha = DateTime.UtcNow,
-                                        Observacion = $"Sensor {nombre} con valor {valor} fuera de rango, no hay ExcesoPuntoOptimo definido.",
-                                        Estado = (int)NumberStatus.InProcces
-                                    };
-                                    _context.Auditoria.Add(auditoriaGenerica);
-                                    await _context.SaveChangesAsync();
-                                }
-                                else
+                                if (excesos != null && excesos.Any())
                                 {
                                     // Por cada ExcesoPuntoOptimo crear la auditoría correspondiente (una por actuador/acción)
                                     foreach (var exceso in excesos)
@@ -195,14 +202,10 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                                         }
 
                                         // Construir observación descriptiva
-                                        string observ = $"Sensor {nombre} (IdSensor={idsen}) con valor {valor} fuera de rango ({po.ValorMin}-{po.ValorMax}). ";
+                                        string observ ="";
                                         if (actuador != null)
-                                        {
-                                            observ += $"Solicita activar Actuador {actuador.IdActuador} del dispositivo {exceso.IdDispositivo} (AccionActId={exceso.IdAccionAct}).";
-                                        }
-                                        else
-                                        {
-                                            observ += $"No se encontró actuador para dispositivo {exceso.IdDispositivo}.";
+                                        {;
+                                            observ = $" Exceso en Sensor {nombre} con valor {valor} fuera de rango ({po.ValorMin}-{po.ValorMax}). ";
                                         }
 
                                         // Crear registro de auditoría con estado InProcces para que la ESP lo lea luego
@@ -215,21 +218,9 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                                             Estado = (int)NumberStatus.InProcces
                                         };
 
-                                        // si tu Auditorium tiene campo para relacionar el Actuador, lo asignamos; si no existe, está bien
-                                        // auditoria.IdActuador = actuador?.IdActuador; // descomenta si existe ese campo
                                         _context.Auditoria.Add(auditoria);
                                         await _context.SaveChangesAsync();
 
-                                        // Opcional: si quieres, puedes también ligar el Actuador al IdAccionAct generado (igual a lo que hace Confirm)
-                                        if (actuador != null)
-                                        {
-                                            // guardamos la referencia de qué acción de auditoría corresponde al actuador (si tu modelo lo admite)
-                                            // Nota: Confirm() espera que act.IdAccionAct sea el IdAccion de la auditoría para luego confirmar
-                                            // Si quieres enlazarlo aquí, descomenta la siguiente línea (y asegúrate que tipos son compatibles)
-                                            // actuador.IdAccionAct = auditoria.IdAccion;
-                                            _context.Entry(actuador).State = EntityState.Modified;
-                                            await _context.SaveChangesAsync();
-                                        }
                                     }
                                 }
                             } // fin if fuera de rango
@@ -237,6 +228,13 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                     } // fin foreach kvp
                 } // fin foreach sensor
 
+                await _hubContext.Clients.All.SendAsync("ReceiveUpdate", new
+                {
+                    tipo = "medicion",
+                    payload =
+                        ""
+
+                });
                 return new Response
                 {
                     NumberResponse = (int)NumberResponses.Correct,

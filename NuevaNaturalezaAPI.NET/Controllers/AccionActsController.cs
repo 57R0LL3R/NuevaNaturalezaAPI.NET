@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "Administrador,Operario")]
     [Route("api/[controller]")]
     [ApiController]
     public class AccionActsController(IAccionActService service) : ControllerBase

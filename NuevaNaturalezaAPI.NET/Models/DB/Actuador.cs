@@ -8,8 +8,8 @@
         public string? On {  get; set; } 
         public string? Off { get; set; }
 
-        public virtual AccionAct IdAccionActNavigation { get; set; } = new AccionAct();
-        public virtual Dispositivo IdDispositivoNavigation { get; set; } = new Dispositivo();
+        public virtual AccionAct? IdAccionActNavigation { get; set; } 
+        public virtual Dispositivo? IdDispositivoNavigation { get; set; }
         public virtual ICollection<Auditorium> Auditoria { get; set; } = new List<Auditorium>();
     }
 }

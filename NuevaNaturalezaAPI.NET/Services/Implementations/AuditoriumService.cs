@@ -25,7 +25,9 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             var list = await _context.Auditoria
                 .Include(x=>x.IdAccionNavigation.Actuadores)
                 .Include(x => x.IdUsuarioNavigation.IdRolNavigation)
-                .Include(x => x.IdDispositivoNavigation).ToListAsync();
+                .Include(x => x.IdDispositivoNavigation)
+                .OrderByDescending(x=>x.Fecha)
+                .ToListAsync();
             return _mapper.Map<List<AuditoriumDTO>>(list);
         }
 

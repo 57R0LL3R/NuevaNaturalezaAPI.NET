@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
-    [Authorize(Roles = "Administrador")]
     [Route("api/[controller]")]
     [ApiController]
     public class ESPController(IESPService service) : ControllerBase

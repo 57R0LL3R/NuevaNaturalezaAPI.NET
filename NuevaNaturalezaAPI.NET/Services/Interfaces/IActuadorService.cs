@@ -9,6 +9,6 @@ namespace NuevaNaturalezaAPI.NET.Services.Interfaces
         Task<ActuadorDTO?> CreateAsync(ActuadorDTO dto);
         Task<bool> UpdateAsync(Guid id, ActuadorDTO dto);
         Task<bool> DeleteAsync(Guid id);
-        Task<ActuadorDTO?> ONOFFActuador(Guid id, ActuadorDTO dto, Guid? idSistema,string observacion);
+        Task<Response?> ONOFFActuador(Guid id, ActuadorDTO dto, Guid? idSistema,string observacion);
     }
 }

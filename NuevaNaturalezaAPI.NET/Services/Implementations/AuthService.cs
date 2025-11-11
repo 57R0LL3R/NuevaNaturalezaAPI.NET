@@ -36,7 +36,8 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         // 🔹 LOGIN CON JWT Y COOKIE
         public async Task<Response> Login(LoginModel loginModel)
         {
-            var hashedPass = Hash256.Hash(loginModel.Pass);
+            var hashedPass = Hash256.Hash(loginModel.Pass ?? throw new ArgumentNullException(nameof(loginModel.Pass)));
+
 
             var user = await _context.Usuarios
                 .Include(u => u.IdRolNavigation)
@@ -60,7 +61,11 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             };
 
             // 🔹 Crear el token JWT
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var jwtKey = _configuration["Jwt:Key"] ?? 
+            throw new InvalidOperationException("Jwt:Key no está configurada en appsettings o variables de entorno");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

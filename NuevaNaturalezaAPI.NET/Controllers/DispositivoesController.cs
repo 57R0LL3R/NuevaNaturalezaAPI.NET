@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
+
     [Authorize(Roles = "Administrador,Operario")]
     [Route("api/[controller]")]
     [ApiController]
@@ -22,9 +23,9 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DispositivoDTO>>> Get()
+        public async Task<ActionResult<IEnumerable<DispositivoDTO>>> Get([FromQuery]bool data = true)
         {
-            return Ok(await _service.GetAllAsync());
+            return Ok(await _service.GetAllAsync(data));
         }
 
         [HttpGet("{id}")]
@@ -33,7 +34,7 @@ namespace NuevaNaturalezaAPI.NET.Controllers
             var result = await _service.GetByIdAsync(id);
             return result == null ? NotFound() : Ok(result);
         }
-
+        [Authorize(Roles ="Administrador")]
         [HttpPost]
         public async Task<ActionResult<DispositivoDTO>> Post(DispositivoDTO dto)
         {
@@ -48,6 +49,7 @@ namespace NuevaNaturalezaAPI.NET.Controllers
             return updated ? Ok(dto) : BadRequest();
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
