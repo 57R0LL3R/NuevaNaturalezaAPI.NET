@@ -110,13 +110,19 @@ public partial class NuevaNatuContext : DbContext
             entity.ToTable("Checklist");
 
             entity.Property(e => e.IdChecklist).ValueGeneratedNever();
-            entity.Property(e => e.Usuario).HasMaxLength(100);
             entity.Property(e => e.ObservacionGeneral).HasMaxLength(500);
 
             // Relación con detalles
             entity.HasMany(e => e.Detalles)
                   .WithOne(d => d.Checklist)
                   .HasForeignKey(d => d.IdChecklist);
+
+
+            entity.HasOne(e => e.IdUsuarioNavigation)
+                  .WithMany(d => d.Checklists)
+                  .HasForeignKey(d => d.IdUsuario);
+
+
         });
 
         modelBuilder.Entity<Dosificador>(entity =>

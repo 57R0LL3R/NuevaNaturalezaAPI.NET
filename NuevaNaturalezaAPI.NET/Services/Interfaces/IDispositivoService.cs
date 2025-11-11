@@ -7,7 +7,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Interfaces
 {
     public interface IDispositivoService
     {
-        Task<IEnumerable<DispositivoDTO>> GetAllAsync();
+        Task<IEnumerable<DispositivoDTO>> GetAllAsync(bool data);
         Task<DispositivoDTO?> GetByIdAsync(Guid id);
         Task<DispositivoDTO?> CreateAsync(DispositivoDTO dto);
         Task<bool> UpdateAsync(Guid id, DispositivoDTO dto);

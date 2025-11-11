@@ -28,7 +28,7 @@ public class DispositivoDTO
 
     public Guid? IdArea { get; set; }
 
-    public virtual Area IdAreaNavigation { get; set; } = null!;
+    public virtual Area? IdAreaNavigation { get; set; } = null!;
 
     public virtual TipoDispositivoDTO? IdTipoDispositivoNavigation { get; set; }
 

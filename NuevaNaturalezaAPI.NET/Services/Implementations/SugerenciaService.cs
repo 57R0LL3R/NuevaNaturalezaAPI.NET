@@ -13,7 +13,8 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<IEnumerable<SugerenciaDTO>> GetAllAsync()
         {
-            var list = await _context.Sugerencias.ToListAsync();
+            var list = await _context.Sugerencias
+                .OrderByDescending(x => x.Fecha).ToListAsync();
             return _mapper.Map<List<SugerenciaDTO>>(list);
         }
 

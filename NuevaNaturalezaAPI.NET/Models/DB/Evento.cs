@@ -16,7 +16,7 @@ public class Evento
 
     public DateTime FechaEvento { get; set; } = DateTime.UtcNow;
 
-    public virtual AccionAct? IdAccionActNavigation { get; set; } = null!;
+    public virtual AccionAct? IdAccionActNavigation { get; set; }
 
 
     public virtual Dispositivo IdDispositivoNavigation { get; set; } = null!;

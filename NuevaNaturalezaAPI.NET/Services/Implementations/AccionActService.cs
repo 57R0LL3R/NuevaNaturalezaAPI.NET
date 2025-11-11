@@ -33,9 +33,10 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<bool> UpdateAsync(Guid id, AccionActDTO dto)
         {
-            if (id != dto.IdAccionAct) return false;
+            var entity = await _context.AccionAct.FindAsync(id);
+            if (id != dto.IdAccionAct || entity == null) return false;
 
-            var entity = _mapper.Map<AccionAct>(dto);
+            entity.Accion = dto.Accion;
             _context.Entry(entity).State = EntityState.Modified;
 
             try

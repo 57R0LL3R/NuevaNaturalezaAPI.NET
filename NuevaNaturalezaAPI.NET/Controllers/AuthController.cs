@@ -35,7 +35,7 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         {
             return Ok(await _authService.Recover(id, usuario));
         }
-        [HttpPost("LogOut")]
+        [HttpDelete("LogOut")]
         public async Task<ActionResult> LogOut()
         {
             return Ok(await _authService.LogOut());

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Humanizer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using NuevaNaturalezaAPI.NET.Utilities;
 
 namespace NuevaNaturalezaAPI.NET.Services.Implementations
 {
@@ -52,14 +54,15 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 return false;
             }
         }
-        public async Task<ActuadorDTO?> ONOFFActuador(Guid id, ActuadorDTO dto, Guid? idSistema,string observacion)
+        //await _context.SaveChangesAsync();
+        public async Task<Response?> ONOFFActuador(Guid id, ActuadorDTO dto, Guid? idSistema,string observacion)
         {
 
             Actuador? actuador = await _context.Actuador.FirstOrDefaultAsync(x => x.IdActuador == id);
             if (id != dto.IdActuador || actuador is null) return null;
             if (dto.IdAccionAct != actuador.IdAccionAct)
             {
-                var audi = await _context.Auditoria.FirstOrDefaultAsync(x => x.IdDispositivo == dto.IdDispositivo && x.Estado != (int)NumberStatus.InProcces);
+                var audi = await _context.Auditoria.FirstOrDefaultAsync(x => x.IdDispositivo == dto.IdDispositivo && x.Estado == (int)NumberStatus.InProcces);
                 if (audi == null)
                 {
                     await _context.Auditoria.AddAsync(new Auditorium()
@@ -74,15 +77,33 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                     await _context.Eventos.AddAsync(new Evento()
                     {
                         IdImpacto = Guid.Parse("ec5e89b7-d35f-4925-900e-6dafe45e5470"),
-                        IdAccionAct = dto.IdAccionAct ?? Guid.Empty,
+                        IdAccionAct = dto.IdAccionAct,
                         IdDispositivo = dto.IdDispositivo,
                         IdSistema = idSistema ?? Guid.Parse("1f1b289a-5fc7-426a-937c-1475c168d2f4")
                     });
                     await _context.SaveChangesAsync();
+
+                    return new()
+                    {
+                        NumberResponse = (int)NumberResponses.Correct,
+                        Data = actuador,
+                        Message = "Auditoria creada se procesara en breves instantes"
+                    };
                 }
+                return new()
+                {
+                    NumberResponse = (int)NumberResponses.Warning,
+                    Data = actuador,
+                    Message = "No se creo auditoria ya hay un proceso pendiente"
+                };
 
             }
-            return dto;
+            return new()
+            {
+                NumberResponse=(int)NumberResponses.Incorrect,
+                Data = actuador,
+                Message = "No se creo auditoria la accion solicitada es opuesta a lo esperado"
+            };
         }
 
         public async Task<bool> DeleteAsync(Guid id)

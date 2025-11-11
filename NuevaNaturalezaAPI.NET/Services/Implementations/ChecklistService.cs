@@ -20,10 +20,21 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             _mapper = mapper;
         }
 
+        public async Task<IEnumerable<ChecklistDTO>> GetAllInterval(DateTime desde,DateTime hasta)
+        {
+            var lista = await _context.Checklists
+                .Include(c => c.IdUsuarioNavigation)
+                .Include(c => c.Detalles)
+                .ThenInclude(c => c.IdDispositivoNavigation).Where(x=>x.Fecha> desde && x.Fecha< hasta.AddDays(1))
+                .ToListAsync();
+            return _mapper.Map<List<ChecklistDTO>>(lista);
+        }
         public async Task<IEnumerable<ChecklistDTO>> GetAllAsync()
         {
             var lista = await _context.Checklists
+                .Include(c => c.IdUsuarioNavigation)
                 .Include(c => c.Detalles)
+                .ThenInclude(c => c.IdDispositivoNavigation)
                 .ToListAsync();
             return _mapper.Map<List<ChecklistDTO>>(lista);
         }
@@ -32,24 +43,18 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         {
             var entity = await _context.Checklists
                 .Include(c => c.Detalles)
+                .ThenInclude(c => c.IdDispositivoNavigation)
+                .Include(c => c.IdUsuarioNavigation)
                 .FirstOrDefaultAsync(c => c.IdChecklist == id);
             return entity == null ? null : _mapper.Map<ChecklistDTO>(entity);
         }
 
         public async Task<ChecklistDTO?> CreateAsync(ChecklistDTO dto)
-        {
+        { 
+            if (dto.IdUsuario is null ) {
+                    dto.IdUsuario = Guid.Parse("5d78da22-8c43-40f5-aa96-bfe9d531fde8");}
             var entity = _mapper.Map<Checklist>(dto);
-
-            // Forzar nuevos GUIDs para los detalles y el checklist
-            entity.IdChecklist = Guid.NewGuid();
-            foreach (var det in entity.Detalles)
-            {
-                det.IdDetalle = Guid.NewGuid();  // evita conflicto con IDs duplicados
-                det.IdChecklist = entity.IdChecklist;
-                det.Checklist = null; // rompe referencia circular
-                _context.Entry(det).State = EntityState.Added;
-            }
-
+            
             _context.Checklists.Add(entity);
             await _context.SaveChangesAsync();
 

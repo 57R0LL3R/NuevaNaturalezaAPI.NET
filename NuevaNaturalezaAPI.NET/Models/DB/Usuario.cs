@@ -20,4 +20,5 @@ public class Usuario
     public virtual ICollection<Auditorium> Auditoria { get; set; } = new List<Auditorium>();
 
     public virtual Rol IdRolNavigation { get; set; } = null!;
+    public virtual ICollection<Checklist> Checklists { get; set; } = new List<Checklist>();
 }

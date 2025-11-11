@@ -11,6 +11,7 @@ namespace NuevaNaturalezaAPI.NET.Models.DB
 
         public string Tipo { get; set; } = string.Empty; // "Sensor" o "Actuador"
         public string ValorRegistrado { get; set; } = string.Empty; // ej: "7.2 pH", "Encendido", etc.
+        public string? UltimoValorMedido { get; set; } = string.Empty; // ej: "7.2 pH", "Encendido", etc.
 
         // 🔹 Relaciones
         public virtual Checklist Checklist { get; set; } = null!;

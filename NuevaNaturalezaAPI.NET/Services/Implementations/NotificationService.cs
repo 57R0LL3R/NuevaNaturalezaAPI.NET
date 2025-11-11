@@ -17,9 +17,9 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         private readonly NuevaNatuContext _context;
         private readonly IMapper _mapper;
 
-        private readonly IHubContext<NotificacionesHub> _hubContext;
+        private readonly IHubContext<SignalRHub> _hubContext;
 
-        public NotificacionService(NuevaNatuContext context, IMapper mapper, IHubContext<NotificacionesHub> hubContext)
+        public NotificacionService(NuevaNatuContext context, IMapper mapper, IHubContext<SignalRHub> hubContext)
         {
             _context = context;
             _mapper = mapper;
@@ -50,8 +50,14 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             _context.Notificacions.Add(entity);
             try
             {
-                await _context.SaveChangesAsync();
-                await _hubContext.Clients.All.SendAsync("RecibirNotificacion", entity);
+                //await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("ReceiveUpdate", new
+                {
+                    tipo = "notificacion",
+                    payload = 
+                        entity
+                    
+                } );
                 return _mapper.Map<NotificacionDTO>(entity);
             }
             catch

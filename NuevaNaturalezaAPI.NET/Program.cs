@@ -89,16 +89,17 @@ builder.Services.AddCors(options =>
     options.AddPolicy(allowAll, policy =>
     {
         policy
-            .WithOrigins("http://localhost:4200") // tu frontend Angular
+            .WithOrigins("http://localhost:4200",
+            "http://localhost:8083"
+            , "https://nuevanaturaleza.fly.dev") // tu frontend Angular
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials(); // 👈 esto es clave
-    });       
-});
+    });
+}); 
 var app = builder.Build();
 
 
-app.UseCors(allowAll);
 
 if (app.Environment.IsDevelopment())
 {
@@ -107,9 +108,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors(allowAll);
+app.UseCors(allowAll); 
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapHub<NotificacionesHub>("/hubs/notificaciones");
+app.MapHub<SignalRHub>("/hubs/generalr");
 app.Run();
+
+public partial class Program { }
+

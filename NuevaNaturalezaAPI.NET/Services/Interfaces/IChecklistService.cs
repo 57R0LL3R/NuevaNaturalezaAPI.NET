@@ -7,6 +7,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Interfaces
 {
     public interface IChecklistService
     {
+        Task<IEnumerable<ChecklistDTO>> GetAllInterval(DateTime desde, DateTime hasta);
         Task<IEnumerable<ChecklistDTO>> GetAllAsync();
         Task<ChecklistDTO?> GetByIdAsync(Guid id);
         Task<ChecklistDTO?> CreateAsync(ChecklistDTO dto);

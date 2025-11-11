@@ -132,16 +132,16 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("IdUsuario")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("ObservacionGeneral")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<string>("Usuario")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
                     b.HasKey("IdChecklist");
+
+                    b.HasIndex("IdUsuario");
 
                     b.ToTable("Checklist", (string)null);
                 });
@@ -161,6 +161,9 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<string>("UltimoValorMedido")
+                        .HasColumnType("text");
 
                     b.Property<string>("ValorRegistrado")
                         .IsRequired()
@@ -802,6 +805,15 @@ namespace NuevaNaturalezaAPI.NET.Migrations
                     b.Navigation("IdUsuarioNavigation");
                 });
 
+            modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Checklist", b =>
+                {
+                    b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Usuario", "IdUsuarioNavigation")
+                        .WithMany("Checklists")
+                        .HasForeignKey("IdUsuario");
+
+                    b.Navigation("IdUsuarioNavigation");
+                });
+
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.ChecklistDetalle", b =>
                 {
                     b.HasOne("NuevaNaturalezaAPI.NET.Models.DB.Checklist", "Checklist")
@@ -1191,6 +1203,8 @@ namespace NuevaNaturalezaAPI.NET.Migrations
             modelBuilder.Entity("NuevaNaturalezaAPI.NET.Models.DB.Usuario", b =>
                 {
                     b.Navigation("Auditoria");
+
+                    b.Navigation("Checklists");
                 });
 #pragma warning restore 612, 618
         }

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
-    //[Authorize(Roles = "Administrador,Operario")]
+    [Authorize(Roles = "Administrador,Operario")]
     [Route("api/[controller]")]
     [ApiController]
     public class ChecklistController : ControllerBase
@@ -35,7 +35,13 @@ namespace NuevaNaturalezaAPI.NET.Controllers
             var checklist = await _service.GetByIdAsync(id);
             return checklist == null ? NotFound() : Ok(checklist);
         }
-
+        [HttpGet("filtrar")]
+        public async Task<ActionResult<ChecklistDTO>>Filtrar([FromQuery] DateTime desde, [FromQuery]DateTime hasta)
+        {
+            var checklist = await _service.GetAllInterval(desde,hasta);
+            return checklist == null ? NotFound() : Ok(checklist);
+        }
+        
         // POST: api/Checklist
         [HttpPost]
         public async Task<ActionResult<ChecklistDTO>> PostChecklist(ChecklistDTO dto)

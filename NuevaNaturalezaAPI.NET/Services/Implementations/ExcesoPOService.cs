@@ -34,12 +34,14 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         public async Task<bool> UpdateAsync(Guid id, ExcesoPuntoOptimoDTO dto)
         {
             if (id != dto.IdExcesoPuntoOptimo) return false;
-
-            var entity = _mapper.Map<ExcesoPuntoOptimo>(dto);
-            _context.Entry(entity).State = EntityState.Modified;
-
+            var entity = await _context.ExcesoPuntoOptimo.FirstOrDefaultAsync(x => x.IdExcesoPuntoOptimo == id); ;
+            entity.IdPuntoOptimo = dto.IdPuntoOptimo;
+            entity.IdDispositivo = dto.IdDispositivo;
+            entity.IdTipoExceso = dto.IdTipoExceso;
+            entity.IdAccionAct = dto.IdAccionAct;
             try
             {
+                _context.Entry(entity).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return true;
             }
