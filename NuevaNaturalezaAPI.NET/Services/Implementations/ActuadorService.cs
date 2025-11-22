@@ -6,13 +6,16 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
 using NuevaNaturalezaAPI.NET.Utilities;
+using System.Security.Claims;
 
 namespace NuevaNaturalezaAPI.NET.Services.Implementations
 {
-    public class ActuadorService(NuevaNatuContext context, IMapper mapper) : IActuadorService
+    public class ActuadorService(NuevaNatuContext context, IMapper mapper,
+            IHttpContextAccessor httpContextAccessor) : IActuadorService
     {
         private readonly NuevaNatuContext _context = context;
         private readonly IMapper _mapper = mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public async Task<IEnumerable<ActuadorDTO>> GetAllAsync()
         {
@@ -65,13 +68,19 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 var audi = await _context.Auditoria.FirstOrDefaultAsync(x => x.IdDispositivo == dto.IdDispositivo && x.Estado == (int)NumberStatus.InProcces);
                 if (audi == null)
                 {
+
+                    var userId = _httpContextAccessor.HttpContext?
+                        .User?
+                        .FindFirst(ClaimTypes.NameIdentifier)?
+                        .Value;
+                    userId ??= "5d78da22-8c43-40f5-aa96-bfe9d531fde8";
                     await _context.Auditoria.AddAsync(new Auditorium()
                     {
                         Estado = (int)NumberStatus.InProcces,
                         IdAccion = dto.IdAccionAct,
                         IdDispositivo = dto.IdDispositivo,
                         Observacion = observacion,
-                        IdUsuario = Guid.Parse("5d78da22-8c43-40f5-aa96-bfe9d531fde8")
+                        IdUsuario = Guid.Parse(userId)
                     });
                     await _context.SaveChangesAsync();
                     await _context.Eventos.AddAsync(new Evento()

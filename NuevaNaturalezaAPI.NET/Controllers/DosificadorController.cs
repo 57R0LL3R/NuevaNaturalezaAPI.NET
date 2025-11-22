@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
-    [Authorize(Roles = "Administrador")]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DosificadorController : ControllerBase
@@ -23,6 +23,8 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         }
 
         // GET: api/Dosificador
+        
+        [Authorize(Roles = "Administrador,Operario")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DosificadorDTO>>> GetAll()
         {
@@ -30,6 +32,7 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         }
 
         // GET: api/Dosificador/{id}
+        [Authorize(Roles = "Administrador,Operario")]
         [HttpGet("{id}")]
         public async Task<ActionResult<DosificadorDTO>> Get(Guid id)
         {
@@ -38,6 +41,7 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         }
 
         // POST: api/Dosificador
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<ActionResult<DosificadorDTO>> Post(DosificadorDTO dto)
         {
@@ -48,6 +52,7 @@ namespace NuevaNaturalezaAPI.NET.Controllers
 
         // PUT: api/Dosificador/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Put(Guid id, DosificadorDTO dto)
         {
             var updated = await _service.UpdateAsync(id, dto);
@@ -56,6 +61,7 @@ namespace NuevaNaturalezaAPI.NET.Controllers
 
         // DELETE: api/Dosificador/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var deleted = await _service.DeleteAsync(id);

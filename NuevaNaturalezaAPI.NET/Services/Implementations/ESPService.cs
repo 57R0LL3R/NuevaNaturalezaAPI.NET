@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Humanizer;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using NuevaNaturalezaAPI.NET.Models.DB;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Runtime.ConstrainedExecution;
+using System.Security.Claims;
 
 namespace NuevaNaturalezaAPI.NET.Services.Implementations
 {
@@ -59,7 +61,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
                 return new Response()
                 {
-                    Data = auditorias.Where(x => x.Estado != (int)NumberStatus.InProcces).ToList(),
+                    Data = _mapper.Map<List<AuditoriumDTO>>(auditorias.Where(x => x.Estado != (int)NumberStatus.InProcces).ToList()),
                     NumberResponse = (int)NumberResponses.Correct
                 };
             }
@@ -67,6 +69,73 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 return new Response() { Message = ex.Message, NumberResponse = (int)NumberResponses.Error };
             }
         }
+
+        public async Task<Response> Confirm2(string estadosF)
+        {
+            var estados = estadosF.Split(",").ToList();
+
+            var auditorias = new List<Auditorium>();
+
+            var actuadores = await _context.Actuador.Where(x => estados.Contains(x.On ?? string.Empty) || estados.Contains(x.Off ?? string.Empty)).ToListAsync();
+            Actuador? act = null;
+            var tiposAcci = await _context.AccionAct.ToListAsync();
+            bool anyact = false;
+            foreach (string es in estados)
+            {
+                act = actuadores.FirstOrDefault(ac=> ac.Off.Equals(es) || ac.On.Equals(es));
+                if (act == null) continue;
+                anyact = true;
+                Guid idaccion = es.Equals(act.On) ? tiposAcci.FirstOrDefault(x => x.IdAccionAct.CompareTo(Guid.Parse("80b8364b-8603-42d9-b857-0db5f055c6fd")) == 0).IdAccionAct :
+                    tiposAcci.FirstOrDefault(x => x.IdAccionAct.CompareTo(Guid.Parse("80b8364b-8603-42d9-b857-0db5f055c6fd")) != 0).IdAccionAct;
+
+                var newaudi = new Auditorium()
+                {
+                    Estado = (int)NumberStatus.Correct,
+                    IdAccion = idaccion,
+                    IdDispositivo=act.IdDispositivo,
+                    IdUsuario = Guid.Parse("5d78da22-8c43-40f5-aa96-bfe9d531fde8"),
+                    Observacion="Modulo local"
+                };
+                _context.Add(newaudi);
+                await _context.Eventos.AddAsync(new Evento()
+                {
+                    IdImpacto = Guid.Parse("ec5e89b7-d35f-4925-900e-6dafe45e5470"),
+                    IdAccionAct = idaccion,
+                    IdDispositivo = act.IdDispositivo,
+                    IdSistema = Guid.Parse("1f1b289a-5fc7-426a-937c-1475c168d2f4")
+                });
+                //await _context.SaveChangesAsync();
+                auditorias.Add(newaudi);
+            }
+            
+            if (anyact)
+                await _hubContext.Clients.All.SendAsync("ReceiveUpdate", new
+                {
+                    tipo = "actuador",
+                    payload =
+                         _mapper.Map<List<AuditoriumDTO>>(auditorias.Where(x => x.Estado != (int)NumberStatus.InProcces).ToList())
+
+                });
+            try
+            {
+
+                return new Response()
+                {
+                    Data = anyact? _mapper.Map<List<AuditoriumDTO>>(auditorias.Where(x => x.Estado != (int)NumberStatus.InProcces).ToList()):null,
+                    NumberResponse = (int)NumberResponses.Correct
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Response() { Message = ex.Message, NumberResponse = (int)NumberResponses.Error };
+            }
+        }
+
+
+
+
+
+
 
         public async Task<string> GetOutsOfActuators()
         {
@@ -76,13 +145,17 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
 
             string outputs = "";
+            Actuador? act = null;
             for(int i = 0; i < auditorias.Count; i++)
             {
-                var act = actuadores.Find(x => x.IdDispositivo == auditorias[i].IdDispositivo);
+                act = actuadores.Find(x => x.IdDispositivo == auditorias[i].IdDispositivo);
                 if(act != null)
                 {
+
+                    if (i!=0)
+                        outputs += ",";
                     outputs += auditorias[i].IdAccion.Value.Equals(typeAccions.FirstOrDefault(x=>x.IdAccionAct.CompareTo(Guid.Parse("80b8364b-8603-42d9-b857-0db5f055c6fd"))==0).IdAccionAct) ? act.On : act.Off;
-                    outputs += ",";
+                    
                 }
             }
             return outputs;
@@ -219,6 +292,14 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                                         };
 
                                         _context.Auditoria.Add(auditoria);
+                                        await _context.Eventos.AddAsync(new Evento()
+                                        {
+                                            IdImpacto = Guid.Parse("ec5e89b7-d35f-4925-900e-6dafe45e5470"),
+                                            IdAccionAct = exceso.IdAccionAct,
+                                            IdDispositivo = exceso.IdDispositivo,
+                                            IdSistema = Guid.Parse("1f1b289a-5fc7-426a-937c-1475c168d2f4")
+                                        });
+                                        await _context.SaveChangesAsync();
                                         await _context.SaveChangesAsync();
 
                                     }

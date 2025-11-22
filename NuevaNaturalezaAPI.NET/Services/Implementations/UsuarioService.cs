@@ -63,7 +63,13 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             {
                 usuario.Clave = Hash256.Hash(usuario.Clave);
             }
-                _context.Entry(usuario).State = EntityState.Modified;
+            usu.IdRol = usuario.IdRol;
+            usu.Cedula = usuario.Cedula;
+            usu.Correo = usuario.Correo;
+            usu.Clave = usuario.Clave;
+            usu.Nombre = usuario.Nombre;
+
+            _context.Entry(usu).State = EntityState.Modified;
 
             try
             {

@@ -53,6 +53,7 @@ builder.Services.AddScoped<ISugerenciaService, SugerenciaService>();
 builder.Services.AddScoped<IChecklistService, ChecklistService>();
 builder.Services.AddScoped<IProgramacionDosificadorService, ProgramacionDosificadorService>();
 builder.Services.AddScoped<IDosificadorService, DosificadorService>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(options =>
 {
