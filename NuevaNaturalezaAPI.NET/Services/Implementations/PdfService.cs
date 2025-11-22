@@ -17,26 +17,30 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         private readonly IEventoService _eService = EService;
         public async Task<Response> PdfSensor(PdfQuery pdfSens)
         {
+
+            var Desde1 = pdfSens.Desde.ToUniversalTime();
+            var now = DateTime.UtcNow;
+            var Hasta2 = pdfSens.Hasta.AddDays(1).ToUniversalTime();
             var dispositivos = await _context.Dispositivos
                 .Include(d => d.IdTipoDispositivoNavigation)
                 .Include(d => d.IdMarcaNavigation)
                 .Include(d => d.Actuadores)
-                .Include(d => d.Sensors)
-                    .ThenInclude(s => s.PuntoOptimos)
-                .Include(d => d.Sensors)
-                    .ThenInclude(s => s.Medicions)
-                        .ThenInclude(m => m.IdFechaMedicionNavigation)
                 .Include(d => d.Sensors)
                     .ThenInclude(s => s.IdTipoMUnidadMNavigation)
                         .ThenInclude(t => t.IdTipoMedicionNavigation)
                 .Include(d => d.Sensors)
                     .ThenInclude(s => s.IdTipoMUnidadMNavigation)
                         .ThenInclude(t => t.IdUnidadMedidaNavigation)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.PuntoOptimos)
+                .Include(d => d.Sensors)
+                    .ThenInclude(s => s.Medicions
+                    .Where(m =>( m.IdFechaMedicionNavigation.Fecha > Desde1 && m.IdFechaMedicionNavigation.Fecha < Hasta2) && m.IdFechaMedicionNavigation.Fecha < now))
+                    .ThenInclude(m => m.IdFechaMedicionNavigation)
+                    .Where(d=> (pdfSens.IdsDispositivos==null || pdfSens.IdsDispositivos.Length==0) ? true: pdfSens.IdsDispositivos.Any(id=> id.Equals(d.IdDispositivo.ToString()))  )
+                
                 .ToListAsync();
 
-            var Desde1 = pdfSens.Desde.ToUniversalTime();
-
-            var Hasta2 = pdfSens.Hasta.AddDays(1).ToUniversalTime();
 
             pdfSens.Hasta = pdfSens.Hasta.AddDays(1).ToUniversalTime();
             pdfSens.Desde = pdfSens.Desde.Date.ToUniversalTime();
@@ -48,7 +52,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                     if(sensor.Medicions !=null)
                     sensor.Medicions = [.. sensor.Medicions
                         .OrderBy(m => m.Fecha)
-                        .Where(x => x.Fecha > Desde1 && x.Fecha < Hasta2)];
+                        ];
                 }
             }
 

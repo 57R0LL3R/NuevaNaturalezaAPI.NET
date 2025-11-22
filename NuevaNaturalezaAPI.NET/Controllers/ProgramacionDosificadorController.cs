@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Acuaponic.Controllers
 {
-    [Authorize(Roles = "Administrador")]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProgramacionDosificacionController : ControllerBase
@@ -22,6 +22,7 @@ namespace Acuaponic.Controllers
         }
 
         // GET: api/ProgramacionDosificacion
+        [Authorize(Roles = "Administrador,Operario")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProgramacionDosificadorDTO>>> GetAll()
         {
@@ -30,12 +31,14 @@ namespace Acuaponic.Controllers
 
         // GET: api/ProgramacionDosificacion/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Administrador,Operario")]
         public async Task<ActionResult<ProgramacionDosificadorDTO>> Get(Guid id)
         {
             var result = await _service.GetByIdAsync(id);
             return result == null ? NotFound() : Ok(result);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<ActionResult<ProgramacionDosificadorDTO>> Post(ProgramacionDosificadorDTO dto)
         {
@@ -45,6 +48,7 @@ namespace Acuaponic.Controllers
         }
 
         // PUT: api/ProgramacionDosificacion/5
+        [Authorize(Roles = "Administrador")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(Guid id,ProgramacionDosificadorDTO dto)
         {
@@ -53,6 +57,7 @@ namespace Acuaponic.Controllers
         }
 
         // DELETE: api/ProgramacionDosificacion/5
+        [Authorize(Roles = "Administrador")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id)
         {

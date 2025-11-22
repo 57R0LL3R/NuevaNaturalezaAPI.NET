@@ -42,5 +42,12 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         {
             return Ok(await _service.Confirm(estadosf));
         }
+
+
+        [HttpGet("Confirm2")]
+        public async Task<IActionResult> Confirm2([FromQuery] string estadosf)
+        {
+            return Ok(await _service.Confirm2(estadosf));
+        }
     }
 }
