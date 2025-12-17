@@ -31,6 +31,27 @@ namespace NuevaNaturalezaAPI.NET.Controllers
             return resf.NumberResponse==(int)NumberResponses.Correct ? Ok(resf): BadRequest(resf);
         }
 
+        [HttpPost("Sincronizar")]
+        public async Task<IActionResult> Sincronizar(List<Dictionary<string, object>>? dSensores)
+        {
+            return Ok(await _service.Sincronizacion(dSensores));
+
+            /*Response resf = new();
+            foreach (var med in medicion)
+            {
+                var res = await _service.UpdateMedicions(med);
+                resf = res;
+                if (res.NumberResponse == (int)NumberResponses.Error)
+                {
+
+                    break;
+
+                }
+
+            }
+            return resf.NumberResponse == (int)NumberResponses.Correct ? Ok(resf) : BadRequest(resf);*/
+        }
+
         [HttpGet("Estados")]
         public async Task<IActionResult> Estados()
         {
