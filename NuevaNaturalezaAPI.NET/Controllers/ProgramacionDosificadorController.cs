@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Acuaponic.Controllers
 {
-    [Authorize]
+    
     [Route("api/[controller]")]
     [ApiController]
     public class ProgramacionDosificacionController : ControllerBase
@@ -22,7 +22,6 @@ namespace Acuaponic.Controllers
         }
 
         // GET: api/ProgramacionDosificacion
-        [Authorize(Roles = "Administrador,Operario")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProgramacionDosificadorDTO>>> GetAll()
         {
