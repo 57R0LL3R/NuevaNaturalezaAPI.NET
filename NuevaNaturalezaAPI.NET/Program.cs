@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Text;
+using NuevaNaturalezaAPI.NET.Services.BGService;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "ClaveSuperSecreta12345"; // puedes ponerlo en appsettings.json
@@ -54,6 +55,9 @@ builder.Services.AddScoped<ISugerenciaService, SugerenciaService>();
 builder.Services.AddScoped<IChecklistService, ChecklistService>();
 builder.Services.AddScoped<IProgramacionDosificadorService, ProgramacionDosificadorService>();
 builder.Services.AddScoped<IDosificadorService, DosificadorService>();
+builder.Services.AddSingleton<ISyncQueue, SyncQueue>();
+builder.Services.AddHostedService<SyncBackgroundService>();
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(options =>

@@ -7,7 +7,6 @@ namespace NuevaNaturalezaAPI.NET.Services.Interfaces
     {
         Task<string> GetOutsOfActuators();
         Task<Response> UpdateMedicions(MedicionesESP mediciones);
-        Task<Response> Sincronizacion(List<Dictionary<string, object>>? dSensores);
         Task<Response> Confirm(string estadosf);
         Task<Response> Confirm2(string estadosf); 
     }

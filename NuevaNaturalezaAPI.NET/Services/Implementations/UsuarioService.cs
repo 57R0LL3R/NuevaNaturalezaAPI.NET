@@ -55,18 +55,13 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             if (id != dto.IdUsuario || usu is null) return false;
 
             var usuario = _mapper.Map<Usuario>(dto);
-            if (usuario.Clave is null)
+            if (usuario.Clave != null)
             {
-                usuario.Clave = usu.Clave;
-            }
-            else
-            {
-                usuario.Clave = Hash256.Hash(usuario.Clave);
+               usu.Clave = Hash256.Hash(usuario.Clave);
             }
             usu.IdRol = usuario.IdRol;
             usu.Cedula = usuario.Cedula;
             usu.Correo = usuario.Correo;
-            usu.Clave = usuario.Clave;
             usu.Nombre = usuario.Nombre;
 
             _context.Entry(usu).State = EntityState.Modified;

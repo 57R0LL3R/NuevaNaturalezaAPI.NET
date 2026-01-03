@@ -1,16 +1,19 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
+using NuevaNaturalezaAPI.NET.Services.Implementations;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ESPController(IESPService service) : ControllerBase
+    public class ESPController(IESPService service, ISyncQueue queue) : ControllerBase
     {
+
+        private readonly ISyncQueue _syncQueue = queue;
         private readonly IESPService _service = service;
 
         [HttpPost("Medidas")]
@@ -30,26 +33,19 @@ namespace NuevaNaturalezaAPI.NET.Controllers
             }
             return resf.NumberResponse==(int)NumberResponses.Correct ? Ok(resf): BadRequest(resf);
         }
-
         [HttpPost("Sincronizar")]
-        public async Task<IActionResult> Sincronizar(List<Dictionary<string, object>>? dSensores)
+        public IActionResult Sincronizar(List<List<Dictionary<string, object>>>? dSensores)
         {
-            return Ok(await _service.Sincronizacion(dSensores));
-
-            /*Response resf = new();
-            foreach (var med in medicion)
+            _syncQueue.Enqueue(new SyncJob
             {
-                var res = await _service.UpdateMedicions(med);
-                resf = res;
-                if (res.NumberResponse == (int)NumberResponses.Error)
-                {
+                Sensores = dSensores ?? []
+            });
 
-                    break;
-
-                }
-
-            }
-            return resf.NumberResponse == (int)NumberResponses.Correct ? Ok(resf) : BadRequest(resf);*/
+            return Ok(new
+            {
+                status = 200,
+                message = "Datos recibidos"
+            });
         }
 
         [HttpGet("Estados")]

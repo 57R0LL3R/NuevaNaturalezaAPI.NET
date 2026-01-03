@@ -6,10 +6,12 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
 using NuevaNaturalezaAPI.NET.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Runtime.ConstrainedExecution;
+using System.Runtime.Serialization;
 using System.Security.Claims;
 
 namespace NuevaNaturalezaAPI.NET.Services.Implementations
@@ -88,6 +90,9 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 Guid idaccion = es.Equals(act.On) ? tiposAcci.FirstOrDefault(x => x.IdAccionAct.CompareTo(Guid.Parse("80b8364b-8603-42d9-b857-0db5f055c6fd")) == 0).IdAccionAct :
                     tiposAcci.FirstOrDefault(x => x.IdAccionAct.CompareTo(Guid.Parse("80b8364b-8603-42d9-b857-0db5f055c6fd")) != 0).IdAccionAct;
 
+                act.IdAccionAct = idaccion;
+
+                _context.Entry(act).State = EntityState.Modified;
                 var newaudi = new Auditorium()
                 {
                     Estado = (int)NumberStatus.Correct,
@@ -104,10 +109,10 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                     IdDispositivo = act.IdDispositivo,
                     IdSistema = Guid.Parse("1f1b289a-5fc7-426a-937c-1475c168d2f4")
                 });
-                //await _context.SaveChangesAsync();
+                //
                 auditorias.Add(newaudi);
             }
-            
+            await _context.SaveChangesAsync();
             if (anyact)
                 await _hubContext.Clients.All.SendAsync("ReceiveUpdate", new
                 {
@@ -336,199 +341,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 };
             }
         }
-        public async Task<Response> Sincronizacion(List<Dictionary<string, object>>? dSensores)
-        {
-            try
-            {
-                var titulos = await _context.Titulos.ToListAsync();
-                var tipoNoti = await _context.TipoNotificacions.ToListAsync();
-                var dispositivos = await _context.Dispositivos.ToListAsync();
-                var sensores = await _context.Sensors.ToListAsync();
-                var Puntosoptimos = await _context.PuntoOptimos
-                    .Include(x => x.IdSensorNavigation.IdDispositivoNavigation)
-                    .Include(x => x.ExcesoPuntosOptimos)
-                    .ThenInclude(x => x.IdTipoExcesoNavigation)
-                    .ToListAsync();
+      
 
-                // Cargamos actuadores y excesos una sola vez
-                var actuadores = await _context.Actuador.ToListAsync();
-                var excesosPuntoOptimoAll = await _context.ExcesoPuntoOptimo.ToListAsync();
-
-                if (dSensores is null)
-                {
-                    return new();
-                }
-
-                FechaMedicion? fm = null;
-                // Guardar fecha de medición
-                foreach (var sensor in dSensores)
-                {
-                    foreach (var kvp in sensor)
-                    {
-                        string nombre = kvp.Key;       // "nL"
-                        var dis = dispositivos.FirstOrDefault(x => x.SegundoNombre?.Equals(nombre) ?? false);
-                        if (nombre.Equals("fecha"))
-                        {
-
-                            var fechaSinKind = DateTime.SpecifyKind((DateTime)(kvp.Value), DateTimeKind.Unspecified);
-                            var zonaColombia = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
-                            var fechaUtc = TimeZoneInfo.ConvertTimeToUtc(fechaSinKind, zonaColombia);
-                            fm = new()
-                            {
-                                Fecha = fechaUtc
-                            };
-                            break;
-
-                        }
-                    }
-                    if (fm != null)
-                        break;
-                }
-                // Para agrupar auditorías / notificaciones y luego guardar (puede guardarse dentro del loop si prefieres)
-                fm ??= new FechaMedicion();
-
-                _context.FechaMedicions.Add(fm);
-                await _context.SaveChangesAsync();
-                foreach (var sensor in dSensores)
-                {
-                    foreach (var kvp in sensor)
-                    {
-                        string nombre = kvp.Key;    // "nL"
-                        if (nombre.Equals("fecha"))
-                            continue;
-
-                        var dis = dispositivos.FirstOrDefault(x => x.SegundoNombre?.Equals(nombre) ?? false);
-                        var val = kvp.Value.ToString();
-                        double valor = Convert.ToDouble(val, CultureInfo.InvariantCulture);
-
-                        if (dis is null)
-                        {
-                            Dispositivo dis1 = new()
-                            {
-                                Nombre = nombre,
-                                SegundoNombre = nombre,
-                                Sensors = new List<Sensor>() { new Sensor() { } }
-                            };
-
-                            _context.Dispositivos.Add(dis1);
-                            await _context.SaveChangesAsync();
-
-                            dis = dis1;
-                            // recargar sensores list local
-                            // 
-                            sensores = await _context.Sensors.ToListAsync();
-                        }
-
-                        var idsen = sensores.First(x => x.IdDispositivo == dis.IdDispositivo).IdSensor;
-                        Medicion m = new()
-                        {
-                            IdSensor = idsen,
-                            IdFechaMedicion = fm.IdFechaMedicion,
-                            Valor = valor,
-                        };
-                        _context.Medicions.Add(m);
-                        await _context.SaveChangesAsync();
-
-                        // Buscar punto óptimo para este sensor
-                        var po = Puntosoptimos.FirstOrDefault(x => x.IdSensor == idsen);
-                        if (po != null)
-                        {
-                            // si el valor está fuera del rango
-                            if (m.Valor < po.ValorMin || m.Valor > po.ValorMax)
-                            {
-                                // 1) crear notificación (ya tenías esta lógica)
-                                Notificacion notificacion = new()
-                                {
-                                    IdTipoNotificacion = tipoNoti.First(x => x.Nombre == "Valor fuera de rango").IdTipoNotificacion,
-                                    IdTitulo = titulos.First(x => x.Titulo1 == "Sensor fuera de rango").IdTitulo,
-                                    Enlace = "",
-                                    Mensaje = nombre + " fuera del punto optimo (" + valor + ")"
-                                };
-                                _context.Add(notificacion);
-                                await _context.SaveChangesAsync();
-
-                                // 2) buscar ExcesoPuntoOptimo asociados al punto óptimo actual
-
-                                List<ExcesoPuntoOptimo>? excesos = null;
-                                if (m.Valor < po.ValorMin)
-                                    excesos = po.ExcesoPuntosOptimos?.Where(x => x.IdTipoExcesoNavigation?.Nombre == "Inferior").ToList();
-                                else
-                                    excesos = po.ExcesoPuntosOptimos?.Where(x => x.IdTipoExcesoNavigation?.Nombre != "Inferior").ToList();
-
-                                // Si no hay excesos definidos, aún podemos opcionalmente crear una auditoría genérica
-                                if (excesos != null && excesos.Any())
-                                {
-                                    // Por cada ExcesoPuntoOptimo crear la auditoría correspondiente (una por actuador/acción)
-                                    foreach (var exceso in excesos)
-                                    {
-                                        // Intentamos encontrar el actuador en el dispositivo objetivo que tenga la misma acción (IdAccionAct)
-                                        var actuador = actuadores
-                                            .FirstOrDefault(a => a.IdDispositivo == exceso.IdDispositivo
-                                                              && a.IdAccionAct == exceso.IdAccionAct);
-
-                                        // Si no encontramos un actuador con la acción exacta, intentamos cualquiera del dispositivo
-                                        if (actuador == null)
-                                        {
-                                            actuador = actuadores.FirstOrDefault(a => a.IdDispositivo == exceso.IdDispositivo);
-                                        }
-
-                                        // Construir observación descriptiva
-                                        string observ = "";
-                                        if (actuador != null)
-                                        {
-                                            ;
-                                            observ = $" {nombre}: {valor} fuera de rango ({po.ValorMin}-{po.ValorMax}). ";
-                                        }
-
-                                        // Crear registro de auditoría con estado InProcces para que la ESP lo lea luego
-                                        var auditoria = new Auditorium()
-                                        {
-                                            IdDispositivo = exceso.IdDispositivo,
-                                            IdAccion = exceso.IdAccionAct, // asociamos la acción que definió ExcesoPuntoOptimo
-                                            Fecha = DateTime.UtcNow,
-                                            Observacion = observ,
-                                            Estado = (int)NumberStatus.InProcces
-                                        };
-
-                                        _context.Auditoria.Add(auditoria);
-                                        await _context.Eventos.AddAsync(new Evento()
-                                        {
-                                            IdImpacto = Guid.Parse("ec5e89b7-d35f-4925-900e-6dafe45e5470"),
-                                            IdAccionAct = exceso.IdAccionAct,
-                                            IdDispositivo = exceso.IdDispositivo,
-                                            IdSistema = Guid.Parse("1f1b289a-5fc7-426a-937c-1475c168d2f4")
-                                        });
-                                        await _context.SaveChangesAsync();
-                                        await _context.SaveChangesAsync();
-
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                await _hubContext.Clients.All.SendAsync("ReceiveUpdate", new
-                {
-                    tipo = "medicion",
-                    payload =
-                        ""
-                });
-                return new Response
-                {
-                    NumberResponse = (int)NumberResponses.Correct,
-                    Message = "Sensores almacenados correctamente",
-                    Data = dSensores
-                };
-            }
-            catch (Exception ex)
-            {
-                return new Response
-                {
-                    Message = ex.Message,
-                    NumberResponse = (int)NumberResponses.Error
-                };
-            }
-        }
     }
 }
