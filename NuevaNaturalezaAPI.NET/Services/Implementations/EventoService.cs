@@ -27,7 +27,8 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 .Include(x => x.IdSistemaNavigation)
                 .Include(x => x.IdAccionActNavigation)
                 .Include(x => x.IdImpactoNavigation)
-                .OrderByDescending(x => x.FechaEvento)
+                .OrderByDescending(x => x.FechaEvento) // más reciente primero
+                .Take(200)                       // solo los últimos 100
                 .ToListAsync();
             return _mapper.Map<List<EventoDTO>>(lista);
         }

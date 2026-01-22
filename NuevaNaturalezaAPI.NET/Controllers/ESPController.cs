@@ -5,6 +5,7 @@ using NuevaNaturalezaAPI.NET.Models.DB;
 using NuevaNaturalezaAPI.NET.Models.DTO;
 using NuevaNaturalezaAPI.NET.Services.Implementations;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NuevaNaturalezaAPI.NET.Controllers
 {
@@ -17,21 +18,37 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         private readonly IESPService _service = service;
 
         [HttpPost("Medidas")]
-        public async Task<IActionResult> Data(List<MedicionesESP> medicion)
+        public IActionResult Data(List<MedicionesESP> medicion)
         {
-            Response resf = new();
-            foreach (var med in medicion)
+            List<List<Dictionary<string, object>>> dSensores = [];
+            foreach (var kval in medicion)
             {
-               var res = await _service.UpdateMedicions(med);
-                resf = res;
-                if (res.NumberResponse == (int)NumberResponses.Error){
-                
-                    break;
+                if (kval.DatosSensores == null) continue;
 
+                if (kval.Fecha != null) {
+                    kval.DatosSensores.Last().Add("fecha", kval.Fecha);
                 }
-                
+                else
+                {
+                    // 2026 - 01 - 16T21: 28:03
+                    DateTime date = DateTime.UtcNow.AddHours(-5);
+                    kval.DatosSensores.Last().Add("fecha", date.ToUniversalTime());
+                }
+
+                dSensores.Add(kval.DatosSensores);
+
             }
-            return resf.NumberResponse==(int)NumberResponses.Correct ? Ok(resf): BadRequest(resf);
+
+            _syncQueue.Enqueue(new SyncJob
+            {
+                Sensores = dSensores ?? []
+            });
+
+            return Ok(new
+            {
+                status = 200,
+                message = "Datos recibidos"
+            });
         }
         [HttpPost("Sincronizar")]
         public IActionResult Sincronizar(List<List<Dictionary<string, object>>>? dSensores)
@@ -52,10 +69,10 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         public async Task<IActionResult> Estados()
         {
             return Ok(await _service.GetOutsOfActuators());
-        }  
+        }
 
         [HttpGet("Confirm")]
-        public async Task<IActionResult> Confirm([FromQuery]string estadosf)
+        public async Task<IActionResult> Confirm([FromQuery] string estadosf)
         {
             return Ok(await _service.Confirm(estadosf));
         }
@@ -65,6 +82,12 @@ namespace NuevaNaturalezaAPI.NET.Controllers
         public async Task<IActionResult> Confirm2([FromQuery] string estadosf)
         {
             return Ok(await _service.Confirm2(estadosf));
+        }
+
+        [HttpGet("LMU")]
+        public async Task<IActionResult> LMU()
+        {
+            return Ok(await _service.LMU());
         }
     }
 }

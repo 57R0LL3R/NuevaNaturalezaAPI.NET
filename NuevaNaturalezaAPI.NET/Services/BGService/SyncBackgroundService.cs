@@ -293,12 +293,16 @@ public class SyncBackgroundService : BackgroundService
 
                 foreach (var exceso in excesos)
                 {
+
+                    
                     auditorias.Add(new Auditorium
                     {
                         IdDispositivo = exceso.IdDispositivo,
                         IdAccion = exceso.IdAccionAct,
                         Fecha = DateTime.UtcNow,
-                        Estado = (int)NumberStatus.InProcces
+                        Estado = (int)NumberStatus.InProcces,
+                        Observacion = $"  {nombreSensor} : ({promedio}) fuera de rango ({po.ValorMin}-{po.ValorMax}). ",
+                        IdUsuario = Guid.Parse("5d78da22-8c43-40f5-aa96-bfe9d531fde8"),
                     });
 
                     eventos.Add(new Evento
@@ -323,15 +327,20 @@ public class SyncBackgroundService : BackgroundService
         _context.AddRange(auditorias);
         _context.AddRange(eventos);
 
-
-        await _context.SaveChangesAsync(ct);
-
-        await _hubContext.Clients.All.SendAsync("ReceiveUpdate", new
+        try
         {
-            tipo = "medicion",
-            payload =
-                ""
+            await _context.SaveChangesAsync(ct);
 
-        });
+            await _hubContext.Clients.All.SendAsync("ReceiveUpdate", new
+            {
+                tipo = "medicion",
+                payload =
+                    ""
+
+            });
+        }catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 }

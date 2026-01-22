@@ -101,10 +101,16 @@ namespace NuevaNaturalezaAPI.NET.Utilities
 
             CreateMap<ProgramacionDosificador, ProgramacionDosificadorDTO>()
                 .ForMember(dest => dest.NombreDosificador, opt => opt.MapFrom(src => src.Dosificador != null ? src.Dosificador.IdDispositivoNavigation.Nombre : src.Dosificador.LetraActivacion))
+                
+                .ForMember(dest => dest.LetraActivacion, opt => opt.MapFrom(src => src.Dosificador.IdDispositivoNavigation.Actuadores.Last().On))
                 .ReverseMap()
                 .ForMember(dest => dest.Dosificador, opt => opt.Ignore());
 
-            CreateMap<DosificadorDTO, Dosificador>().ReverseMap();
+            CreateMap<DosificadorDTO, Dosificador>()
+                .ReverseMap().
+                ForMember(dest => dest.LetraActivacion, opt => opt.MapFrom(src =>( src.LetraActivacion != null && src.LetraActivacion !="")? 
+                src.LetraActivacion : src.IdDispositivoNavigation!=null ?  src.IdDispositivoNavigation.Actuadores.Last().On : ""))
+           .ForMember(dest => dest.Nombre, opt => opt.MapFrom(src => src.IdDispositivoNavigation.Nombre));
 
         }
     }

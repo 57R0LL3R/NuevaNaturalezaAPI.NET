@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Humanizer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using NuevaNaturalezaAPI.NET.Models.DB;
@@ -11,8 +12,9 @@ using System.Security.Claims;
 namespace NuevaNaturalezaAPI.NET.Services.Implementations
 {
     public class ActuadorService(NuevaNatuContext context, IMapper mapper,
-            IHttpContextAccessor httpContextAccessor) : IActuadorService
+            IHttpContextAccessor httpContextAccessor, IMqttService _MQTTnet) : IActuadorService
     {
+        IMqttService mqtt = _MQTTnet;
         private readonly NuevaNatuContext _context = context;
         private readonly IMapper _mapper = mapper;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
@@ -60,7 +62,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         //await _context.SaveChangesAsync();
         public async Task<Response?> ONOFFActuador(Guid id, ActuadorDTO dto, Guid? idSistema,string observacion)
         {
-
+            List<AccionAct> acciones = await _context.AccionAct.ToListAsync();
             Actuador? actuador = await _context.Actuador.FirstOrDefaultAsync(x => x.IdActuador == id);
             if (id != dto.IdActuador || actuador is null) return null;
             if (dto.IdAccionAct != actuador.IdAccionAct)
@@ -91,18 +93,22 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                         IdSistema = idSistema ?? Guid.Parse("1f1b289a-5fc7-426a-937c-1475c168d2f4")
                     });
                     await _context.SaveChangesAsync();
-
+                    ActuadorDTO act1 = _mapper.Map<ActuadorDTO>(actuador);
+                    var letra = (acciones.FirstOrDefault(x => x.Accion.Equals("Apagado")) != null ? 
+                        (acciones.FirstOrDefault(x => x.Accion.Equals("Apagado")).IdAccionAct == dto.IdAccionAct ?
+                        actuador.Off : actuador.On) : "") ?? "@";
+                    await mqtt.PublishAsync("nn/actuadores/cmd", "{\"t\": \"e\",\"d\":\""+letra+ "\"}");
                     return new()
                     {
                         NumberResponse = (int)NumberResponses.Correct,
-                        Data = actuador,
+                        Data = act1,
                         Message = "Auditoria creada se procesara en breves instantes"
                     };
                 }
                 return new()
                 {
                     NumberResponse = (int)NumberResponses.Warning,
-                    Data = actuador,
+                    Data = _mapper.Map<ActuadorDTO>(actuador),
                     Message = "No se creo auditoria ya hay un proceso pendiente"
                 };
 
@@ -110,7 +116,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             return new()
             {
                 NumberResponse=(int)NumberResponses.Incorrect,
-                Data = actuador,
+                Data = _mapper.Map<ActuadorDTO>(actuador),
                 Message = "No se creo auditoria la accion solicitada es opuesta a lo esperado"
             };
         }

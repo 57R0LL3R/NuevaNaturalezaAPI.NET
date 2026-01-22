@@ -262,9 +262,9 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
                                 List<ExcesoPuntoOptimo>? excesos = null;
                                 if (m.Valor < po.ValorMin)
-                                    excesos = po.ExcesoPuntosOptimos.Where(x=>x.IdTipoExcesoNavigation.Nombre== "Inferior").ToList();
+                                    excesos = po.ExcesoPuntosOptimos.Where(x=>x.IdTipoExcesoNavigation.Nombre== "Deficit").ToList();
                                 else
-                                    excesos = po.ExcesoPuntosOptimos.Where(x => x.IdTipoExcesoNavigation.Nombre != "Inferior").ToList();
+                                    excesos = po.ExcesoPuntosOptimos.Where(x => x.IdTipoExcesoNavigation.Nombre != "Deficit").ToList();
 
                                 // Si no hay excesos definidos, aún podemos opcionalmente crear una auditoría genérica
                                 if (excesos != null && excesos.Any())
@@ -274,20 +274,19 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                                     {
                                         // Intentamos encontrar el actuador en el dispositivo objetivo que tenga la misma acción (IdAccionAct)
                                         var actuador = actuadores
-                                            .FirstOrDefault(a => a.IdDispositivo == exceso.IdDispositivo
-                                                              && a.IdAccionAct == exceso.IdAccionAct);
+                                            .FirstOrDefault(a => a.IdDispositivo == exceso.IdDispositivo);
 
                                         // Si no encontramos un actuador con la acción exacta, intentamos cualquiera del dispositivo
                                         if (actuador == null)
                                         {
-                                            actuador = actuadores.FirstOrDefault(a => a.IdDispositivo == exceso.IdDispositivo);
+                                            continue;
                                         }
 
                                         // Construir observación descriptiva
                                         string observ ="";
                                         if (actuador != null)
-                                        {;
-                                            observ = $" Exceso en Sensor {nombre} con valor {valor} fuera de rango ({po.ValorMin}-{po.ValorMax}). ";
+                                        {
+                                            observ = $"  {nombre} : ({valor}) fuera de rango ({po.ValorMin}-{po.ValorMax}). ";
                                         }
 
                                         // Crear registro de auditoría con estado InProcces para que la ESP lo lea luego
@@ -297,22 +296,27 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                                             IdAccion = exceso.IdAccionAct, // asociamos la acción que definió ExcesoPuntoOptimo
                                             Fecha = DateTime.UtcNow,
                                             Observacion = observ,
-                                            Estado = (int)NumberStatus.InProcces
+                                            Estado = (int)NumberStatus.InProcces,
+                                            IdUsuario = Guid.Parse("5d78da22-8c43-40f5-aa96-bfe9d531fde8"),
                                         };
 
                                         _context.Auditoria.Add(auditoria);
-                                        await _context.Eventos.AddAsync(new Evento()
+                                        /*await _context.Eventos.AddAsync(new Evento()
                                         {
                                             IdImpacto = Guid.Parse("ec5e89b7-d35f-4925-900e-6dafe45e5470"),
                                             IdAccionAct = exceso.IdAccionAct,
                                             IdDispositivo = exceso.IdDispositivo,
                                             IdSistema = Guid.Parse("1f1b289a-5fc7-426a-937c-1475c168d2f4")
+
+
+                    
                                         });
-                                        await _context.SaveChangesAsync();
+                                        await _context.SaveChangesAsync();*/
                                         await _context.SaveChangesAsync();
 
                                     }
                                 }
+                            //*/
                             } // fin if fuera de rango
                         } // fin if po != null
                     } // fin foreach kvp
@@ -341,7 +345,11 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 };
             }
         }
-      
 
+        public async Task<long> LMU()
+        {
+            var last = await _context.FechaMedicions.OrderByDescending(x => x.Fecha).FirstAsync();
+            return new DateTimeOffset(last.Fecha).ToUnixTimeSeconds();
+        }
     }
 }

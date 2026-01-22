@@ -26,7 +26,8 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 .Include(x=>x.IdAccionNavigation.Actuadores)
                 .Include(x => x.IdUsuarioNavigation.IdRolNavigation)
                 .Include(x => x.IdDispositivoNavigation)
-                .OrderByDescending(x=>x.Fecha)
+                .OrderByDescending(x => x.Fecha) // más reciente primero
+                .Take(200)                       // solo los últimos 100
                 .ToListAsync();
             return _mapper.Map<List<AuditoriumDTO>>(list);
         }

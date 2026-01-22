@@ -1,13 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using MQTTnet;
+using MQTTnet.Client;
 using NuevaNaturalezaAPI.NET.Models.DB;
+using NuevaNaturalezaAPI.NET.Services.BGService;
 using NuevaNaturalezaAPI.NET.Services.Implementations;
 using NuevaNaturalezaAPI.NET.Services.Interfaces;
 using NuevaNaturalezaAPI.NET.Utilities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Text;
-using NuevaNaturalezaAPI.NET.Services.BGService;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "ClaveSuperSecreta12345"; // puedes ponerlo en appsettings.json
@@ -46,7 +48,6 @@ builder.Services.AddScoped<ITipoMedicionService, TipoMedicionService>();
 builder.Services.AddScoped<ITipoMUnidadMService, TipoMUnidadMService>();
 builder.Services.AddScoped<ITipoNotificacionService, TipoNotificacionService>();
 builder.Services.AddScoped<IUnidadMedidaService, UnidadMedidaService>();
-builder.Services.AddScoped<IESPService, ESPService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IPdfService, PdfService>();
 builder.Services.AddScoped<IExcesoPOService, ExcesoPOService>();
@@ -57,6 +58,16 @@ builder.Services.AddScoped<IProgramacionDosificadorService, ProgramacionDosifica
 builder.Services.AddScoped<IDosificadorService, DosificadorService>();
 builder.Services.AddSingleton<ISyncQueue, SyncQueue>();
 builder.Services.AddHostedService<SyncBackgroundService>();
+
+builder.Services.AddSingleton<IMqttClient>(sp =>
+{
+    var factory = new MqttFactory();
+    return factory.CreateMqttClient();
+});
+builder.Services.AddScoped<IESPService, ESPService>();
+builder.Services.AddHostedService<MqttBackgroundService>();
+
+builder.Services.AddSingleton<IMqttService, MqttService>();
 
 builder.Services.AddHttpContextAccessor();
 

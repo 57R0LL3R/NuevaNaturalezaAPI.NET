@@ -16,6 +16,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             var list = await _context.ProgramacionDosificadores
                 .Include(x => x.Dosificador)
                     .ThenInclude(d => d.IdDispositivoNavigation)
+                    .ThenInclude(di => di.Actuadores)
                 .ToListAsync();
 
             return list.Select(p => new ProgramacionDosificadorDTO
@@ -25,7 +26,28 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                 Hora = p.Hora,
                 Minuto = p.Minuto,
                 TiempoSegundos = p.TiempoSegundos,
-                // puedes mostrar la letra del dosificador o el nombre del dispositivo padre
+                LetraActivacion = p.Dosificador.LetraActivacion  != ""?
+                p.Dosificador.LetraActivacion :
+                p.Dosificador?.IdDispositivoNavigation?.Actuadores.Last().On ?? "" ,
+                NombreDosificador = p.Dosificador?.IdDispositivoNavigation?.Nombre ?? ""
+            });
+        }
+
+        public async Task<IEnumerable<ProgramacionDosificadorDTO>> PutAllAsync()
+        {
+            var list = await _context.ProgramacionDosificadores
+                .Include(x => x.Dosificador)
+                    .ThenInclude(d => d.IdDispositivoNavigation)
+                    .ThenInclude(di => di.Actuadores)
+                .ToListAsync();
+
+            return list.Select(p => new ProgramacionDosificadorDTO
+            {
+                IdProgramacion = p.IdProgramacion,
+                IdDosificador = p.IdDosificador,
+                Hora = p.Hora,
+                Minuto = p.Minuto,
+                TiempoSegundos = p.TiempoSegundos,
                 NombreDosificador = p.Dosificador?.IdDispositivoNavigation?.Nombre ?? p.Dosificador?.LetraActivacion
             });
         }

@@ -9,6 +9,7 @@ namespace NuevaNaturalezaAPI.NET.Models.DTO
         public Guid IdDispositivo { get; set; }
         public string? LetraActivacion { get; set; }
         public string? Descripcion { get; set; }
+        public string? Nombre { get; set; }
 
         public virtual ICollection<ProgramacionDosificadorDTO>? Programaciones { get; set; }
     }

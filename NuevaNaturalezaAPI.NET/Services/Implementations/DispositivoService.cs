@@ -272,13 +272,13 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
                             }
                             else
                             {
-                                await _excesoService.UpdateAsync(nsen.IdExcesoPuntoOptimo, nsen);
+                                if (nsen.IdExcesoPuntoOptimo == null) ;
+                                await _excesoService.UpdateAsync(nsen.IdExcesoPuntoOptimo?? Guid.Empty, nsen);
                             }
                         }
                         foreach (var sensor in itlistexc)
                         {
-
-                            await _excesoService.DeleteAsync(sensor.IdExcesoPuntoOptimo);
+                            await _excesoService.DeleteAsync(sensor.IdExcesoPuntoOptimo ?? Guid.Empty);
 
                         }
 

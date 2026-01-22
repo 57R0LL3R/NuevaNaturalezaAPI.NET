@@ -14,6 +14,8 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         public async Task<IEnumerable<DosificadorDTO>> GetAllAsync()
         {
             var list = await _context.Dosificadores
+                .Include(d => d.IdDispositivoNavigation)
+                .ThenInclude( x => x.Actuadores)
                 .Include(d => d.Programaciones)
                 .ToListAsync();
             return _mapper.Map<List<DosificadorDTO>>(list);
@@ -30,7 +32,10 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
         public async Task<DosificadorDTO?> CreateAsync(DosificadorDTO dto)
         {
             var entity = _mapper.Map<Dosificador>(dto);
+            var dosificador = await _context.Dispositivos.FindAsync(dto.IdDispositivo);
+            entity.LetraActivacion = dosificador?.Actuadores.Last().On  ?? "";
             _context.Dosificadores.Add(entity);
+            
             try { 
             await _context.SaveChangesAsync();
             }

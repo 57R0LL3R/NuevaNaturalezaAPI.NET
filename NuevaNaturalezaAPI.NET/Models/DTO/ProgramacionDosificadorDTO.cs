@@ -9,5 +9,7 @@
         public int TiempoSegundos { get; set; }
         public string? NombreDosificador { get; set; }
 
+        public string LetraActivacion { get; set; } = "";
+
     }
 }

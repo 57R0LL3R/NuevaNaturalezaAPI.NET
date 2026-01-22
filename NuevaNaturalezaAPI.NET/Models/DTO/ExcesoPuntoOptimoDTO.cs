@@ -3,7 +3,7 @@
     public class ExcesoPuntoOptimoDTO
     {
 
-        public Guid IdExcesoPuntoOptimo { get; set; } = Guid.NewGuid();
+        public Guid? IdExcesoPuntoOptimo { get; set; } = Guid.NewGuid();
         public Guid IdDispositivo { get; set; }
         public Guid? IdAccionAct { get; set; }
         public Guid? IdPuntoOptimo { get; set; }

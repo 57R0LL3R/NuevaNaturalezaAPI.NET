@@ -4,7 +4,7 @@ namespace NuevaNaturalezaAPI.NET.Models.DTO
 {
     public class UsuarioDTO
     {
-        public Guid IdUsuario { get; set; } = Guid.NewGuid();
+        public Guid? IdUsuario { get; set; } = Guid.NewGuid();
 
         public Guid IdRol { get; set; }
 

@@ -31,6 +31,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
             var entities = await _context.Notificacions
                 .Include(x => x.IdTipoNotificacionNavigation)
                 .Include(x => x.IdTituloNavigation)
+                .Take(200)                       // solo los últimos 100
                 .ToListAsync();
             return _mapper.Map<List<NotificacionDTO>>(entities);
         }

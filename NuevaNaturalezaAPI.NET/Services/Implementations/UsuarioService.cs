@@ -35,6 +35,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<UsuarioDTO?> CreateAsync(UsuarioDTO dto)
         {
+            dto.IdUsuario = Guid.NewGuid();
             var usuario = _mapper.Map<Usuario>(dto);
             _context.Usuarios.Add(usuario);
             try

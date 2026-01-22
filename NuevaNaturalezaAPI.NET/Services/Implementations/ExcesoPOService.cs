@@ -25,6 +25,7 @@ namespace NuevaNaturalezaAPI.NET.Services.Implementations
 
         public async Task<ExcesoPuntoOptimoDTO?> CreateAsync(ExcesoPuntoOptimoDTO dto)
         {
+            if (dto.IdExcesoPuntoOptimo == null) dto.IdExcesoPuntoOptimo = Guid.NewGuid();
             var entity = _mapper.Map<ExcesoPuntoOptimo>(dto);
             _context.ExcesoPuntoOptimo.Add(entity);
             await _context.SaveChangesAsync();
